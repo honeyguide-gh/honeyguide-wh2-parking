@@ -54,6 +54,9 @@ LAYERS = ("canopy", "module", "low")
 
 
 def veh_layers(v):
+    if getattr(v, "kind", "flagship") == "farm":
+        b = v.body()
+        return dict(canopy=b, module=b, low=b, door=v.doors_poly())
     return dict(canopy=v.canopy(), module=v.module(),
                 low=box(-F.X_FORK, F.Y_BOX_F, F.X_FORK, F.Y_NOSE)
                 and affinity.translate(

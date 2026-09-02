@@ -1,28 +1,35 @@
-"""Four parking schemes for WH2, against the 31 Aug 2026 model.
+"""WH2 parking schemes, v0.4.0.
 
-Every scheme is checked twice: statically by wh2.check (fit, 600 mm working
-clearance, one door open on every vehicle) and dynamically by sequence.solve,
-which plans a real manoeuvre out of the gate for each vehicle in turn with
-everything still parked in its way.  A layout that cannot be driven out of is
-not a layout, so nothing here is quoted until it passes both.
+Against the 2 Sep 2026 save of Warehouse Design.3dm, which carries the farm
+vehicle (Zusha cargo-trike v1) as well as the Flagships.
+
+Two constraints arrived from the review, and they are expensive:
+  * both doors open on every parked vehicle, so they can all load at once
+  * any vehicle in or out in any order, without moving another
+
+Everything here is checked twice: statically by wh2.check (fit, 600 mm working
+clearance, doors), then dynamically - a manoeuvre planned out of the gate for
+every vehicle with everything else still parked. A layout that cannot be
+driven out of is not a layout.
 """
 import math
-from wh2 import (Flagship as F, Veh, HALL, FREE, FACILITIES, WORKSHOP,
-                 east_wall_u, GATE, check, interlock_pitch)
+from wh2 import (Flagship as F, Farm as Z, Veh, HALL, FREE, FACILITIES,
+                 WORKSHOP, east_wall_u, GATE, check, interlock_pitch)
 from search import free_runs
 
 PITCH = interlock_pitch(150.0)               # 4170, nose under the canopy ahead
-DPITCH = F.X_DOOR_OPEN + F.X_ROOF + 150.0    # 3232, side by side, one door open
+DPITCH = F.X_DOOR_OPEN + F.X_ROOF + 150.0    # 3232, one door open
+BOTH = 2 * F.X_DOOR_OPEN + 150.0             # 4285, both doors, side by side
+DIAG_PITCH = 4450.0                          # the verified diagonal
+DIAG_HDG = 145.0
+DIAG_V = 6400.0
 
-# hdg 90 puts the nose to the west, so the vehicle's right hand side is NORTH
 NORTH, SOUTH = "R", "L"
-GATE_V = (GATE[0] + GATE[1]) / 2             # 6275, the gate centre line
+GATE_V = (GATE[0] + GATE[1]) / 2
 
 
 def street(prefix, v, side, n=None, u_min=None, u_max=None, phase=0.0,
            hdg=90.0, pitch=PITCH):
-    """A street: vehicles nose to tail at v, each nose tucked under the canopy
-    of the one ahead. Placed inside the free run for that v."""
     runs = [r for r in free_runs(v)
             if (u_min is None or r[1] > u_min) and (u_max is None or r[0] < u_max)]
     if not runs:
@@ -38,89 +45,80 @@ def street(prefix, v, side, n=None, u_min=None, u_max=None, phase=0.0,
                 doors=(side,), label=f"{prefix}{i+1}") for i in range(max(0, k))]
 
 
-def rank(prefix, v_axle, u_first, n, side, hdg=0.0, pitch=DPITCH):
-    """Nose-in stands side by side, all opening the same way."""
-    return [Veh(f"{prefix}{i+1}", u_first + i * pitch, v_axle, hdg,
-                doors=(side,), label=f"{prefix}{i+1}") for i in range(n)]
+def both_street(prefix, v_axle, u_min, n=3, pitch=PITCH):
+    """A street with BOTH doors open. The pitch does not change: a door leaf
+    is 1976 mm and the pitch 4170, so the leaves never meet."""
+    return [Veh(f"{prefix}{i+1}", u_min + F.Y_NOSE + i * pitch, v_axle, 90.0,
+                doors=("R", "L"), label=f"{prefix}{i+1}") for i in range(n)]
 
 
-def gate_stand():
-    """One vehicle on the gate line: last in at night, first out in the
-    morning, and it does not block anything else while it stands there."""
-    return [Veh("G1", 3078.0, GATE_V, 90.0, doors=(NORTH,), label="G1",
-                note="gate stand, last in and first out")]
+def diagonal(prefix="D", n=3, u_east=22300.0, pitch=DIAG_PITCH,
+             v_axle=DIAG_V, hdg=DIAG_HDG):
+    """The manager's diagonal, at the angle and pitch that survive the check."""
+    return [Veh(f"{prefix}{i+1}", u_east - i * pitch, v_axle, hdg,
+                doors=("R", "L"), label=f"{prefix}{i+1}") for i in range(n)]
 
 
-def workshop_bay():
+def workshop_bay(farm=False):
+    if farm:
+        return [Veh("W1", -1799.0, 3600.0, 180.0, doors=(), label="W1",
+                    kind="farm", note="workshop bay, the farm vehicle")]
     return [Veh("W1", -1799.0, 3930.0, 180.0, doors=("R", "L"), label="W1",
                 note="workshop service bay, both doors open")]
 
 
-# the two rows the building actually allows:
-#   B at 2574, doors south over the cold line   (body 1560 to 3588)
-#   A at 5700, doors north over the weighing zone (body 4686 to 6714)
-# 1098 mm of walkway between them, and the north strip left as the lane.
-V_B, V_A = 2574.0, 5700.0
-V_AXLE = 1560.0 - F.Y_ROOF_R                 # rank tail on the 1560 line
-V_AISLE = 6960.0                             # a vehicle standing in the aisle
-
-
 # ==========================================================================
-def scheme_streets():
-    """Maximum capacity: two full streets, strict LIFO, north strip free."""
-    v = street("B", V_B, SOUTH) + street("A", V_A, NORTH, u_min=2700.0)
-    return dict(key="streets", name="Scheme 1 - Two Streets",
+def scheme_diagonal():
+    """The review's constraints, met exactly: both doors open on every
+    vehicle, and any of them in or out in any order."""
+    v = diagonal(n=3)
+    return dict(key="diag", name="Scheme 1 - Diagonal Three",
+                vehicles=v + workshop_bay(), aisle=2440.0, rows=1,
+                tag="Both doors open, any vehicle out at any time")
+
+
+def scheme_bothstreets():
+    """What both doors costs on its own, with order kept as it is today."""
+    v = both_street("B", 2574.0, 8850.0, 3) + both_street("A", 6874.0, 10300.0, 3)
+    return dict(key="both", name="Scheme 2 - Two Streets, Both Doors",
+                vehicles=v + workshop_bay(), aisle=2272.0, rows=2,
+                tag="Both doors open, but a fixed order in and out")
+
+
+def scheme_onedoor():
+    """The v0.3.0 answer, kept as the reference point: one door open."""
+    v = street("B", 2574.0, SOUTH) + street("A", 5700.0, NORTH, u_min=2700.0)
+    return dict(key="streets", name="Scheme 3 - Two Streets, One Door",
                 vehicles=v + workshop_bay(), aisle=1098.0, rows=2,
-                tag="Every metre of floor used, strict order in and out")
+                tag="The densest layout, one door open and a fixed order")
 
 
-def scheme_two():
-    """Balanced: the same two streets held back east, so the whole west end
-    of the hall stays clear as the load and unload apron."""
-    v = street("B", V_B, SOUTH) + street("A", V_A, NORTH, u_min=7000.0)
-    return dict(key="two", name="Scheme 2 - Two Streets and a Staging Apron",
-                vehicles=v + workshop_bay(), aisle=1098.0, rows=2,
-                tag="One fewer vehicle, seven metres of clear apron at the gate")
+def scheme_waves():
+    """Three inside on the diagonal, the rest in the yard, swapped over
+    through the morning."""
+    v = diagonal(n=3)
+    return dict(key="waves", name="Scheme 4 - Three In, Seven Out",
+                vehicles=v + workshop_bay(farm=True), aisle=2440.0, rows=1,
+                tag="Wave one inside, wave two in the yard, both doors open")
 
 
-def scheme_rank():
-    """Independent access: nose-in stands off a full 2934 mm drive aisle."""
-    v = rank("K", V_AXLE, 9834.0, 4, "R", hdg=0.0)
-    return dict(key="rank", name="Scheme 3 - Rank and Aisle",
-                vehicles=v + workshop_bay(), aisle=2934.0, rows=1,
-                tag="Every stand reached without moving another vehicle")
-
-
-def scheme_rank8():
-    """The rank at full capacity: the four stands keep their aisle, and the
-    aisle itself is used as a LIFO street overnight, plus the gate stand."""
-    v = rank("K", V_AXLE, 9834.0, 4, "R", hdg=0.0)
-    v += [Veh(f"P{i+1}", 13228.0 + i * PITCH, V_AISLE, 90.0, doors=(NORTH,),
-              label=f"P{i+1}", note="stands in the aisle overnight")
-          for i in range(3)]
-    v += gate_stand()
-    return dict(key="rank8", name="Scheme 4 - Rank, Aisle and Apron",
-                vehicles=v + workshop_bay(), aisle=2934.0, rows=1,
-                tag="Four independent stands, and the aisle itself parked overnight")
-
-
-SCHEMES = [scheme_streets, scheme_two, scheme_rank, scheme_rank8]
-
-
-def report(s):
-    inside = [x for x in s["vehicles"] if not x.name.startswith("W")]
-    print("=" * 72)
-    print(f"{s['name']}   {len(inside)} inside + 1 workshop = {len(inside)+1}")
-    ok, iss = check(inside)
-    print("   " + ("VALID" if ok else "INVALID"))
-    return ok
+SCHEMES = [scheme_diagonal, scheme_bothstreets, scheme_onedoor, scheme_waves]
 
 
 if __name__ == "__main__":
     import sequence as Q
-    print(f"street pitch {PITCH:.0f}   rank pitch {DPITCH:.0f}")
+    from independent import free_to_leave
+    print(f"street pitch {PITCH:.0f}   one door {DPITCH:.0f}   both doors {BOTH:.0f}")
     for f in SCHEMES:
         s = f()
-        report(s)
-        o, p, bad = Q.solve(s, verbose=False)
-        print(f"   drivable: {'yes' if o else 'NO ' + str(bad)}   {o}")
+        inside = [x for x in s["vehicles"] if not x.name.startswith("W")]
+        ok, iss = check(inside, verbose=False)
+        n, bad, _ = free_to_leave(inside)
+        o, p, _ = Q.solve(dict(vehicles=inside), verbose=False)
+        print("=" * 72)
+        print(f"{s['name']}   {len(inside)} inside + 1 = {len(inside)+1}")
+        print(f"   static {'ok' if ok else 'FAIL'}   any-order {n}/{len(inside)}"
+              f"   LIFO order {o}")
+        for x in iss:
+            if x.startswith("FAIL"):
+                print("   ", x)

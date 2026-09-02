@@ -131,7 +131,7 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
 
 <header>
   <div class="brand"><b><span class="long">Honeyguide </span>WH2</b>
-    <span>Revised parking, four schemes, every exit driven</span></div>
+    <span>v0.4.0 &middot; both doors open, any order &middot; every exit driven</span></div>
   <nav id="tabs" aria-label="Layout schemes"></nav>
   <div class="spacer"></div>
   <button class="themebtn" id="theme" title="Switch theme" aria-label="Switch theme">◐</button>
@@ -504,6 +504,22 @@ function buildFlagship(){
   });
   return g;
 }
+function buildFarm(){
+  /* the Zusha cargo trike: an open flatbed, no doors. Drawn as its real
+     envelope rather than a detailed mesh, because we have no mesh for it. */
+  var f = D.farm, g = new THREE.Group();
+  var L = (f.Y_NOSE - f.Y_TAIL) / 1000, W = 2 * f.X_HALF / 1000;
+  var deck = new THREE.Mesh(new THREE.BoxGeometry(W, 0.75, L * 0.62), VMAT);
+  deck.position.set(0, 0.75, (f.Y_TAIL / 1000) + L * 0.31 + 0.15);
+  var cab = new THREE.Mesh(new THREE.BoxGeometry(W * 0.55, 1.20, L * 0.30), VMAT);
+  cab.position.set(0, 0.75, (f.Y_NOSE / 1000) - L * 0.18);
+  [deck, cab].forEach(function(m){ m.castShadow = true; m.receiveShadow = true;
+    /* mesh local (lx,ly,lz) -> three (lx, lz, -ly): build in three space */
+    g.add(m); });
+  deck.position.z = -deck.position.z; cab.position.z = -cab.position.z;
+  g.userData.doors = {};
+  return g;
+}
 function setDoor(g, side, t){
   var d = g.userData.doors[side];
   if(!d) return;
@@ -522,7 +538,7 @@ function loadScheme(key){
   fleet = [];
   buildFloor(current.marks);
   current.vehicles.forEach(function(v){
-    var node = buildFlagship();
+    var node = (v.kind === 'farm') ? buildFarm() : buildFlagship();
     place(node, v.u, v.v, v.hdg);
     world.add(node);
     fleet.push({node:node, spec:v, path:current.paths[v.name] || null});
@@ -650,9 +666,11 @@ function renderRail(){
   document.getElementById('s-tag').textContent = s.tag;
   var facts = [['Flagships inside', String(s.inside), true],
     ['Plus the workshop bay', '1'],
-    ['Doors open in place', 'every vehicle'],
+    ['Doors open in place', 'both, every vehicle'],
     ['Clearance at fittings', '600 mm'],
     [s.lane_name || 'Drive aisle', s.aisle ? s.aisle+' mm' : 'none'],
+    ['Any vehicle, any order', s.anyorder ? 'yes' : 'no, fixed order',
+     !!s.anyorder],
     ['Tightest point driving out', s.tight + ' mm']];
   document.getElementById('s-facts').innerHTML = facts.map(function(f){
     return '<div>'+f[0]+'</div><b'+(f[2]?' class="hi"':'')+'>'+f[1]+'</b>'; }).join('');
@@ -668,7 +686,7 @@ function updateReadout(name, i, n, dir){
     + name + '</b> &nbsp; ' + i + ' of ' + n;
   else el.innerHTML = '<b>'+current.inside+'</b> inside &nbsp; doors '+
     (doorsOpen?'<b>open</b>':'shut')+' &nbsp; '+
-    (current.aisle ? (current.key === 'rank' || current.key === 'rank8' ? 'aisle <b>' : 'walkway <b>')+current.aisle+'</b> mm' : 'no drive aisle');
+    (current.aisle ? (current.anyorder ? 'aisle <b>' : 'walkway <b>')+current.aisle+'</b> mm' : 'no drive aisle');
 }
 function hideHint(){ var h=document.getElementById('hint');
   if(h && h.style.opacity!=='0') h.style.opacity='0'; }

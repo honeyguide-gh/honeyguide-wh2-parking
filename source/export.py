@@ -67,9 +67,9 @@ def marks(s):
           nu - ux * 350, nv - uy * 350, C["yellow"], 95)
         T(v.u - ux * (F.Y_BOX_R + 250), v.v - uy * (F.Y_BOX_R + 250),
           v.label, 850, -v.hdg)
-    if s["key"] in ("rank", "rank8"):
-        L(9000, 6186, 24200, 6186, C["yellow"], 100)
-    if s["key"] in ("streets", "two"):
+    if s["key"] in ("diag", "waves"):
+        L(9000, 3900, 23500, 3900, C["yellow"], 100)
+    if s["key"] in ("streets", "both"):
         L(8000, 3663, 24000, 3663, C["yellow"], 100)
         L(8000, 4611, 24000, 4611, C["yellow"], 100)
     return m
@@ -85,6 +85,8 @@ def build():
                     for f in FACILITIES],
         equip=[dict(key=k, name=n, b=[a, b, c, dd], h=h, role=r)
                for k, n, a, b, c, dd, h, r in EQUIP],
+        farm={k: getattr(__import__("wh2").Farm, k) for k in
+              ("LENGTH", "WIDTH", "HEIGHT", "Y_NOSE", "Y_TAIL", "X_HALF")},
         vehicle={k: getattr(F, k) for k in
                  ("Y_NOSE", "Y_FRONT_AXLE", "Y_ROOF_F", "Y_BOX_F", "Y_DOOR_F",
                   "Y_DOOR_R", "Y_BOX_R", "Y_ROOF_R", "X_ROOF", "X_BOX",
@@ -97,9 +99,16 @@ def build():
         s = f()
         s.update(P.META[s["key"]])
         inside = [v for v in s["vehicles"] if not v.name.startswith("W")]
-        ex, paths, bad = Q.solve(s, verbose=False)
-        if ex is None:
-            raise SystemExit(f"{s['name']}: no exit for {bad}")
+        if s["key"] in ("diag", "waves"):
+            from independent import free_to_leave
+            nfree, bad, paths = free_to_leave(inside)
+            if bad:
+                raise SystemExit(f"{s['name']}: stuck {bad}")
+            ex = [v.name for v in inside]
+        else:
+            ex, paths, bad = Q.solve(s, verbose=False)
+            if ex is None:
+                raise SystemExit(f"{s['name']}: no exit for {bad}")
         order = list(reversed(ex))          # arrival is the exit run backwards
         import audit_paths as AU
         bad, tight = AU.audit(s, ex, paths, verbose=False)
@@ -110,8 +119,9 @@ def build():
             notes=s["notes"], sequence=s["sequence"],
             inside=len(inside), aisle=round(s["aisle"]),
             tight=int(round(tight)),
-            lane_name=("Walkway between the rows" if s["key"] in ("streets", "two")
+            lane_name=("Walkway between the rows" if s["key"] in ("streets", "both")
                        else "Drive aisle"),
+            anyorder=s["key"] in ("diag", "waves"),
             vehicles=[v.as_dict() for v in s["vehicles"]],
             order=order,
             exit_order=ex,

@@ -202,10 +202,10 @@ def zones(s):
     o.append(txt(750, 7900, "FIRE POINT", 2.2, C["red"]))
     o.append(rect(17500, 150, 18700, 1010, fill="url(#fire)", opacity="0.95"))
     o.append(txt(18100, 1250, "PANEL", 2.2, C["red"]))
-    if s["key"] in ("rank", "rank8"):
-        o.append(line(9000, 6186, 24200, 6186, C["yellow"], 100))
-        o.append(txt(16800, 6360, "DRIVE AISLE 2934 CLEAR", 2.8, C["yellow"]))
-    if s["key"] in ("streets", "two"):
+    if s["key"] in ("diag", "waves"):
+        o.append(line(9000, 3900, 23500, 3900, C["yellow"], 100))
+        o.append(txt(16000, 3300, "AISLE 2440 CLEAR", 2.8, C["yellow"]))
+    if s["key"] in ("streets", "both"):
         o.append(line(8000, 3663, 24000, 3663, C["yellow"], 100))
         o.append(line(8000, 4611, 24000, 4611, C["yellow"], 100))
         o.append(txt(16000, 4180, "WALKWAY 1098 CLEAR", 2.8, C["yellow"]))
@@ -268,12 +268,16 @@ def panel(s, y0):
              f'stroke="#DCD8CE" stroke-width="0.5"/>')
     facts = [("Flagships inside", f"{len(inside)}"),
              ("Plus the workshop bay", "1"),
-             ("Every vehicle opens", "1 door, in place"),
+             ("Every vehicle opens",
+              "both doors" if all(len(v.doors) == 2 or not v.doors
+                                  for v in inside) else "1 door, in place"),
              ("Street pitch", f"{S.PITCH:.0f} mm"),
              ("Clearance at fittings", "600 mm minimum"),
-             ("Walkway between rows" if s["key"] in ("streets", "two")
+             ("Walkway between rows" if s["key"] in ("streets", "both")
               else "Drive aisle",
               f"{s['aisle']:.0f} mm" if s["aisle"] else "none"),
+             ("Any vehicle, any order",
+              "yes" if s["key"] in ("diag", "waves") else "no, fixed order"),
              ("Tightest point driving out", f"{s.get('tight', 0):.0f} mm")]
     cy = y0 + 4
     for k, v in facts:
@@ -328,7 +332,7 @@ def render(s):
     o.append(stxt(30, 30, s["name"].split(" - ")[1].upper(), 8.6, C["ink"],
                   weight="700"))
     o.append(stxt(30, 38, s["tag"], 3.4, C["faint"]))
-    o.append(stxt(SHEET_W - 30, 16, "v0.3.0   31 Aug 2026   1:56 at A2",
+    o.append(stxt(SHEET_W - 30, 16, "v0.4.0   2 Sep 2026   1:56 at A2",
                   2.5, C["faint"], anchor="end"))
     o.append(building())
     o.append(facilities())
@@ -358,58 +362,58 @@ def render(s):
 
 
 META = {
+ "diag": dict(
+   sequence=[
+     "Three stands on the diagonal, at 145 degrees on a 4450 mm pitch.",
+     "Both doors open on all three at once. Load them together.",
+     "Any of the three leaves at any time. Nobody has to be moved.",
+     "Drive in forward, swing left, reverse onto the stand.",
+     "The south strip is the aisle. Keep it clear."],
+   notes=[
+     "Three inside plus the workshop bay. This is the review's two constraints met exactly, and it is the most the shed will take with them.",
+     "Four is not tight, it is impossible. The stand band is 14.9 m once the office, the third fridge and its working strip come off, and the closest two both-doors-open vehicles can ever be, at any angle, is 3950 mm. Four stands need 15.8 m.",
+     "The diagonal is the right instinct: staggered 3650 mm along their axis, two vehicles with both doors open sit only 2200 mm apart across. That is the tightest packing there is.",
+     "Every stand was driven out of the gate in simulation with the other two still standing, doors open. Tightest point on any of those runs is 45 mm.",
+     "If the fleet grows past three inside, the loading formation has to move to the yard. See Scheme 4."]),
+ "both": dict(
+   sequence=[
+     "Street A fills first, east to west, then street B.",
+     "Both doors open on all six. Load them together.",
+     "Morning: A1, A2, A3, then B3, B2, B1. That order is fixed.",
+     "A vehicle that returns early cannot take its stand out of turn.",
+     "The middle strip stays clear as the walkway."],
+   notes=[
+     "Six inside plus the workshop bay: what both doors open costs when the order stays as it is today.",
+     "Both doors open changes nothing nose to tail. A door leaf is 1976 mm and the street pitch is 4170, so the leaves never meet. The cost is sideways: two rows now need 4300 mm between them instead of 3232.",
+     "The price is the morning juggling the review wants rid of. Six vehicles, one fixed order, and nobody can leave out of turn.",
+     "Driven and verified: the whole departure runs A1 through B1 with a tightest point of 41 mm.",
+     "Take this only if loading all six at once matters more than the order they leave in."]),
  "streets": dict(
    sequence=[
      "Street A fills first, east to west, doors north over the weighing zone.",
      "Street B next, doors south over the cold line.",
      "Morning: all of A out west to east, then B out east to west.",
-     "B leaves through A's lane, so A has to be clear first. Order is fixed.",
+     "B leaves through A's lane, so A has to be clear first.",
      "The north strip stays clear for weighing and loading all day."],
    notes=[
-     "Eight inside plus the workshop bay. Every one of the nine was driven out of the gate in simulation, past everything still parked.",
-     "Two streets is the ceiling, not three. A third row can be parked but it cannot be driven out: it would have to thread the 2196 mm lane between street A and the scales, and the vehicle is 2028 mm wide.",
-     "There is no drive aisle. Each street is last in, first out, and B cannot leave until the first two of A have gone.",
+     "Eight inside plus the workshop bay. The densest layout there is, and the reference point for what the two new constraints cost.",
+     "One door open on each vehicle, and a fixed order in and out. Both of the review's constraints are broken here.",
+     "Kept in the set because the difference is the whole decision: eight with one door and a fixed order, three with both doors and any order.",
      "1098 mm of walkway between the two streets, a real gap rather than a painted line.",
-     "Each nose tucks 306 mm under the canopy of the vehicle ahead. That is what puts a 4476 mm vehicle on a 4170 mm pitch."]),
- "two": dict(
+     "Each nose tucks 306 mm under the canopy of the vehicle ahead, which is what puts a 4476 mm vehicle on a 4170 mm pitch."]),
+ "waves": dict(
    sequence=[
-     "Street A fills first, east to west, doors north.",
-     "Street B next, doors south over the cold line.",
-     "Morning: all of A out, then B out east to west through A's lane.",
-     "The west seven metres stay clear as the load and unload apron.",
-     "Pull any vehicle onto the apron to open both doors."],
+     "Overnight: three Flagships inside on the diagonal, the farm vehicle in the workshop bay.",
+     "The other seven stand in the yard, west of the workshop, both doors open.",
+     "Morning: the three inside load and leave, in any order.",
+     "Three from the yard come in and take the empty stands.",
+     "Repeat. Bring the second shift of operators in as the first leaves."],
    notes=[
-     "Seven inside plus the workshop bay, one fewer than Scheme 1, and much easier to live with.",
-     "The whole west end of the hall, seven metres of it, stays clear at the gate: room to turn, to stage a load, and to work on a vehicle with both doors open.",
-     "Street A is held back to u = 7000 so its lead vehicle has the run it needs to line up on the gate.",
-     "Row to row gap is still 1098 mm.",
-     "Same two chains as Scheme 1, one link shorter, and the daily order is easier to hold to."]),
- "rank": dict(
-   sequence=[
-     "Drive in, turn into the aisle, reverse into any free stand.",
-     "Any stand can be taken or vacated at any time.",
-     "Doors all open east; the end stand opens into free floor.",
-     "Weighing and loading runs on the north strip, undisturbed.",
-     "Pull a vehicle onto the aisle to open both doors for service."],
-   notes=[
-     "Four inside plus the workshop bay. The least dense of the four and the only one with genuinely independent access.",
-     "A 2934 mm drive aisle runs the length of the hall, so any vehicle can leave or return at any time without moving another.",
-     "Stands are at 3232 mm centres, which is what one open door needs: 2068 mm of door plus 1014 mm of neighbour plus 150 mm.",
-     "The turn out of a stand into the aisle is the tightest move in any of these schemes. It is a single left hand sweep at the 3158 mm rear axle radius, and it uses the full width of the aisle.",
-     "Choose this if vehicles return at scattered times and the fleet stays at four or five."]),
- "rank8": dict(
-   sequence=[
-     "Stands K1 to K4 fill first, in any order, reversing in off the aisle.",
-     "P1 to P3 then stand in the aisle itself, doors north.",
-     "G1 goes in last, across the gate line.",
-     "Morning: G1 out, then K1 to K4, then P1 to P3 down the aisle.",
-     "By nine the aisle is clear and the scheme is Scheme 3 again."],
-   notes=[
-     "Eight inside plus the workshop bay, which is the same as Scheme 1 but with four stands that stay independent.",
-     "K1 to K4 keep their 2934 mm aisle and their nose-in stands. P1 to P3 borrow the aisle overnight, and G1 borrows the gate.",
-     "The compromise is the aisle. While P1 to P3 are in it, the rank empties west to east instead of in any order; once they have gone the aisle is a full drive aisle again.",
-     "The aisle row sits 150 mm off the noses of the rank and 221 mm off the scales. Paint it and fit wheel stops.",
-     "A full length aisle plus a second nose-in row will not fit: the rank is 4476 mm deep and the aisle 2934 mm, which is 7410 mm of the 9120 mm width."]),
+     "Three inside plus the farm vehicle in the workshop bay, and seven in the yard: ten vehicles, both doors open on all of them, none of them blocking another.",
+     "The yard is where this scheme lives or dies. Seven stands abreast with both doors open need 4285 mm of frontage each, so 30 m in one rank, or about 15 x 17 m as two ranks of four facing one aisle.",
+     "The site model does not carry a yard boundary, so those figures are what the formation needs, not what the yard has. Chalk it out before committing.",
+     "The turnover is the point: three go, three replace them, and the shed never has more than three loading at once. That is the constraint, not a choice.",
+     "The farm vehicle is 4373 x 1813 x 1953 with no doors, so it parks in the workshop bay without a swing to allow for."]),
 }
 
 
@@ -419,7 +423,13 @@ if __name__ == "__main__":
     for f in S.SCHEMES:
         s = f()
         s.update(META[s["key"]])
-        ex, paths, bad = Q.solve(s, verbose=False)
+        inside = [v for v in s["vehicles"] if not v.name.startswith("W")]
+        if s["key"] in ("diag", "waves"):
+            from independent import free_to_leave
+            _, _, paths = free_to_leave(inside)
+            ex = [v.name for v in inside]
+        else:
+            ex, paths, bad = Q.solve(s, verbose=False)
         _, tight = AU.audit(s, ex, paths, verbose=False)
         s["tight"] = tight
         fn = f"out/plan_{s['key']}.svg"

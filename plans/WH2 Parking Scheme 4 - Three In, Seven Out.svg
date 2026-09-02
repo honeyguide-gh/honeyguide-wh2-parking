@@ -17,9 +17,9 @@
          orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#F5C400"/></marker>
 </defs>
 <text x="30.00" y="16.00" font-size="2.8" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#6E6A5E" letter-spacing="1.6" text-anchor="start">HONEYGUIDE GHANA LTD   WH2</text>
-<text x="30.00" y="30.00" font-size="8.6" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="start">RANK AND AISLE</text>
-<text x="30.00" y="38.00" font-size="3.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">Every stand reached without moving another vehicle</text>
-<text x="564.00" y="16.00" font-size="2.5" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="end">v0.3.0   31 Aug 2026   1:56 at A2</text>
+<text x="30.00" y="30.00" font-size="8.6" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="start">THREE IN, SEVEN OUT</text>
+<text x="30.00" y="38.00" font-size="3.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">Wave one inside, wave two in the yard, both doors open</text>
+<text x="564.00" y="16.00" font-size="2.5" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="end">v0.4.0   2 Sep 2026   1:56 at A2</text>
 <polygon points="83.13,212.43 502.24,212.43 542.95,42.43 83.13,42.43 83.13,212.43" fill="url(#wall)"/>
 <polygon points="83.13,212.39 26.02,212.39 26.02,124.96 83.13,124.96 83.13,212.39" fill="url(#wall)"/>
 <polygon points="83.13,212.39 83.13,124.96 26.02,124.96 26.02,212.39 83.13,212.39" fill="#7E7A6E"/>
@@ -83,55 +83,50 @@
 <text x="100.09" y="67.79" font-size="2.2" font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#C8102E" letter-spacing="0.0" text-anchor="middle">FIRE POINT</text>
 <polygon points="420.63,206.18 420.63,190.82 399.20,190.82 399.20,206.18 420.63,206.18" fill="url(#fire)" opacity="0.95"/>
 <text x="409.91" y="186.54" font-size="2.2" font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#C8102E" letter-spacing="0.0" text-anchor="middle">PANEL</text>
-<line x1="247.41" y1="98.39" x2="518.84" y2="98.39" stroke="#F5C400" stroke-width="1.786"/>
-<text x="386.70" y="95.29" font-size="2.8" font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#F5C400" letter-spacing="0.0" text-anchor="middle">DRIVE AISLE 2934 CLEAR</text>
-<polygon points="282.38,182.96 282.38,99.11 242.24,99.11 242.24,182.96 282.38,182.96" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
-<polygon points="299.23,171.57 299.23,136.28 274.77,136.28 274.77,171.57 299.23,171.57" fill="url(#hz)" opacity="0.92"/>
-<line x1="249.99" y1="101.52" x2="274.63" y2="101.52" stroke="#F5C400" stroke-width="3.750"/>
-<line x1="262.31" y1="206.00" x2="262.31" y2="107.33" stroke="#F5C400" stroke-width="1.696"/>
-<polygon points="340.09,182.96 340.09,99.11 299.94,99.11 299.94,182.96 340.09,182.96" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
-<polygon points="356.94,171.57 356.94,136.28 332.48,136.28 332.48,171.57 356.94,171.57" fill="url(#hz)" opacity="0.92"/>
-<line x1="307.69" y1="101.52" x2="332.34" y2="101.52" stroke="#F5C400" stroke-width="3.750"/>
-<line x1="320.01" y1="206.00" x2="320.01" y2="107.33" stroke="#F5C400" stroke-width="1.696"/>
-<polygon points="397.79,182.96 397.79,99.11 357.65,99.11 357.65,182.96 397.79,182.96" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
-<polygon points="414.64,171.57 414.64,136.28 390.19,136.28 390.19,171.57 414.64,171.57" fill="url(#hz)" opacity="0.92"/>
-<line x1="365.40" y1="101.52" x2="390.04" y2="101.52" stroke="#F5C400" stroke-width="3.750"/>
-<line x1="377.72" y1="206.00" x2="377.72" y2="107.33" stroke="#F5C400" stroke-width="1.696"/>
-<polygon points="455.50,182.96 455.50,99.11 415.36,99.11 415.36,182.96 455.50,182.96" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
-<polygon points="472.35,171.57 472.35,136.28 447.89,136.28 447.89,171.57 472.35,171.57" fill="url(#hz)" opacity="0.92"/>
-<line x1="423.11" y1="101.52" x2="447.75" y2="101.52" stroke="#F5C400" stroke-width="3.750"/>
-<line x1="435.43" y1="206.00" x2="435.43" y2="107.33" stroke="#F5C400" stroke-width="1.696"/>
-<polygon points="34.50,109.08 34.50,192.94 74.65,192.94 74.65,109.08 34.50,109.08" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
-<polygon points="42.11,120.48 42.11,155.77 17.65,155.77 17.65,120.48 42.11,120.48" fill="url(#hz)" opacity="0.92"/>
-<polygon points="91.50,120.48 91.50,155.77 67.04,155.77 67.04,120.48 91.50,120.48" fill="url(#hz)" opacity="0.92"/>
-<line x1="66.90" y1="190.53" x2="42.25" y2="190.53" stroke="#F5C400" stroke-width="3.750"/>
-<line x1="54.58" y1="86.05" x2="54.57" y2="184.72" stroke="#F5C400" stroke-width="1.696"/>
-<polygon points="244.20,181.00 280.41,181.00 280.41,109.22 276.13,109.22 276.13,106.05 265.88,101.08 258.74,101.08 248.49,106.05 248.49,109.22 244.20,181.00" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
-<polygon points="280.41,181.00 280.41,109.22 244.20,109.22 244.20,181.00 280.41,181.00" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
-<polygon points="299.23,171.57 299.23,136.28 274.77,136.28 274.77,171.57 299.23,171.57" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
-<polygon points="262.31,105.36 256.59,114.65 268.02,114.65" fill="#2B2924" opacity="0.85"/>
-<polygon points="301.91,181.00 338.12,181.00 338.12,109.22 333.84,109.22 333.84,106.05 323.59,101.08 316.44,101.08 306.19,106.05 306.19,109.22 301.91,181.00" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
-<polygon points="338.12,181.00 338.12,109.22 301.91,109.22 301.91,181.00 338.12,181.00" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
-<polygon points="356.94,171.57 356.94,136.28 332.48,136.28 332.48,171.57 356.94,171.57" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
-<polygon points="320.01,105.36 314.30,114.65 325.73,114.65" fill="#2B2924" opacity="0.85"/>
-<polygon points="359.61,181.00 395.83,181.00 395.83,109.22 391.54,109.22 391.54,106.05 381.29,101.08 374.15,101.08 363.90,106.05 363.90,109.22 359.61,181.00" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
-<polygon points="395.83,181.00 395.83,109.22 359.61,109.22 359.61,181.00 395.83,181.00" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
-<polygon points="414.64,171.57 414.64,136.28 390.19,136.28 390.19,171.57 414.64,171.57" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
-<polygon points="377.72,105.36 372.01,114.65 383.44,114.65" fill="#2B2924" opacity="0.85"/>
-<polygon points="417.32,181.00 453.54,181.00 453.54,109.22 449.25,109.22 449.25,106.05 439.00,101.08 431.86,101.08 421.61,106.05 421.61,109.22 417.32,181.00" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
-<polygon points="453.54,181.00 453.54,109.22 417.32,109.22 417.32,181.00 453.54,181.00" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
-<polygon points="472.35,171.57 472.35,136.28 447.89,136.28 447.89,171.57 472.35,171.57" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
-<polygon points="435.43,105.36 429.71,114.65 441.14,114.65" fill="#2B2924" opacity="0.85"/>
-<polygon points="72.68,111.05 36.47,111.05 36.47,182.83 40.75,182.83 40.75,186.00 51.00,190.97 58.15,190.97 68.40,186.00 68.40,182.83 72.68,111.05" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
-<polygon points="36.47,111.05 36.47,182.83 72.68,182.83 72.68,111.05 36.47,111.05" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
-<polygon points="42.11,120.48 42.11,155.77 17.65,155.77 17.65,120.48 42.11,120.48" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
-<polygon points="91.50,120.48 91.50,155.77 67.04,155.77 67.04,120.48 91.50,120.48" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
-<polygon points="54.57,186.69 60.29,177.40 48.86,177.40" fill="#2B2924" opacity="0.85"/>
-<polygon points="272.31,147.31 272.31,130.52 252.31,130.52 252.31,147.31 272.31,147.31" fill="#1B1A16" opacity="0.6"/><text x="262.31" y="135.16" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">K1</text>
-<polygon points="330.01,147.31 330.01,130.52 310.01,130.52 310.01,147.31 330.01,147.31" fill="#1B1A16" opacity="0.6"/><text x="320.01" y="135.16" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">K2</text>
-<polygon points="387.72,147.31 387.72,130.52 367.72,130.52 367.72,147.31 387.72,147.31" fill="#1B1A16" opacity="0.6"/><text x="377.72" y="135.16" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">K3</text>
-<polygon points="445.43,147.31 445.43,130.52 425.43,130.52 425.43,147.31 445.43,147.31" fill="#1B1A16" opacity="0.6"/><text x="435.43" y="135.16" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">K4</text>
-<polygon points="64.58,161.53 64.58,144.74 44.58,144.74 44.58,161.53 64.58,161.53" fill="#1B1A16" opacity="0.6"/><text x="54.58" y="149.38" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">W1</text>
+<line x1="247.41" y1="139.21" x2="506.34" y2="139.21" stroke="#F5C400" stroke-width="1.786"/>
+<text x="372.41" y="149.93" font-size="2.8" font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#F5C400" letter-spacing="0.0" text-anchor="middle">AISLE 2440 CLEAR</text>
+<polygon points="485.45,58.82 437.35,127.50 470.24,150.53 518.33,81.84 485.45,58.82" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
+<polygon points="525.60,100.84 505.36,129.75 485.32,115.72 505.57,86.81 525.60,100.84" fill="url(#hz)" opacity="0.92"/>
+<polygon points="485.15,72.51 464.90,101.42 444.87,87.39 465.11,58.48 485.15,72.51" fill="url(#hz)" opacity="0.92"/>
+<line x1="465.27" y1="144.11" x2="445.08" y2="129.97" stroke="#F5C400" stroke-width="3.750"/>
+<line x1="515.10" y1="51.46" x2="458.51" y2="132.29" stroke="#F5C400" stroke-width="1.696"/>
+<polygon points="405.98,58.82 357.89,127.50 390.77,150.53 438.87,81.84 405.98,58.82" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
+<polygon points="446.14,100.84 425.89,129.75 405.86,115.72 426.10,86.81 446.14,100.84" fill="url(#hz)" opacity="0.92"/>
+<polygon points="405.68,72.51 385.44,101.42 365.40,87.39 385.65,58.48 405.68,72.51" fill="url(#hz)" opacity="0.92"/>
+<line x1="385.81" y1="144.11" x2="365.62" y2="129.97" stroke="#F5C400" stroke-width="3.750"/>
+<line x1="435.64" y1="51.46" x2="379.04" y2="132.29" stroke="#F5C400" stroke-width="1.696"/>
+<polygon points="326.52,58.82 278.42,127.50 311.31,150.53 359.40,81.84 326.52,58.82" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
+<polygon points="366.67,100.84 346.43,129.75 326.39,115.72 346.64,86.81 366.67,100.84" fill="url(#hz)" opacity="0.92"/>
+<polygon points="326.22,72.51 305.97,101.42 285.94,87.39 306.18,58.48 326.22,72.51" fill="url(#hz)" opacity="0.92"/>
+<line x1="306.34" y1="144.11" x2="286.15" y2="129.97" stroke="#F5C400" stroke-width="3.750"/>
+<line x1="356.17" y1="51.46" x2="299.58" y2="132.29" stroke="#F5C400" stroke-width="1.696"/>
+<polygon points="34.50,114.98 34.50,198.83 74.65,198.83 74.65,114.98 34.50,114.98" fill="none" stroke="#FFFFFF" stroke-width="1.3392857142857142"/>
+
+<line x1="66.90" y1="199.30" x2="42.25" y2="199.30" stroke="#F5C400" stroke-width="3.750"/>
+<line x1="54.58" y1="94.83" x2="54.57" y2="193.50" stroke="#F5C400" stroke-width="1.696"/>
+<polygon points="515.59,82.32 485.93,61.55 444.76,120.35 448.27,122.81 446.45,125.41 451.99,135.36 457.85,139.46 469.09,141.26 470.91,138.67 515.59,82.32" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
+<polygon points="485.93,61.55 444.76,120.35 474.42,141.12 515.59,82.32 485.93,61.55" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
+<polygon points="525.60,100.84 505.36,129.75 485.32,115.72 505.57,86.81 525.60,100.84" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
+<polygon points="485.15,72.51 464.90,101.42 444.87,87.39 465.11,58.48 485.15,72.51" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
+<polygon points="457.38,133.90 467.39,129.57 458.02,123.01" fill="#2B2924" opacity="0.85"/>
+<polygon points="436.13,82.32 406.47,61.55 365.29,120.35 368.80,122.81 366.99,125.41 372.53,135.36 378.38,139.46 389.63,141.26 391.45,138.67 436.13,82.32" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
+<polygon points="406.47,61.55 365.29,120.35 394.96,141.12 436.13,82.32 406.47,61.55" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
+<polygon points="446.14,100.84 425.89,129.75 405.86,115.72 426.10,86.81 446.14,100.84" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
+<polygon points="405.68,72.51 385.44,101.42 365.40,87.39 385.65,58.48 405.68,72.51" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
+<polygon points="377.91,133.90 387.92,129.57 378.56,123.01" fill="#2B2924" opacity="0.85"/>
+<polygon points="356.67,82.32 327.00,61.55 285.83,120.35 289.34,122.81 287.52,125.41 293.07,135.36 298.92,139.46 310.17,141.26 311.98,138.67 356.67,82.32" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
+<polygon points="327.00,61.55 285.83,120.35 315.49,141.12 356.67,82.32 327.00,61.55" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
+<polygon points="366.67,100.84 346.43,129.75 326.39,115.72 346.64,86.81 366.67,100.84" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
+<polygon points="326.22,72.51 305.97,101.42 285.94,87.39 306.18,58.48 326.22,72.51" fill="none" stroke="#101010" stroke-width="0.16" stroke-dasharray="1.1 0.8"/>
+<polygon points="298.45,133.90 308.46,129.57 299.10,123.01" fill="#2B2924" opacity="0.85"/>
+<polygon points="38.39,121.66 38.39,199.75 70.76,199.75 70.76,121.66 38.39,121.66" fill="#D9D5CB" stroke="#101010" stroke-width="0.2" opacity="0.94"/>
+<polygon points="38.39,121.66 38.39,199.75 70.76,199.75 70.76,121.66 38.39,121.66" fill="#C4BFB3" stroke="#101010" stroke-width="0.16"/>
+
+<polygon points="54.57,195.46 60.29,186.18 48.86,186.18" fill="#2B2924" opacity="0.85"/>
+<polygon points="486.62,114.81 486.62,98.02 466.62,98.02 466.62,114.81 486.62,114.81" fill="#1B1A16" opacity="0.6"/><text x="476.62" y="102.66" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">D1</text>
+<polygon points="407.16,114.81 407.16,98.02 387.16,98.02 387.16,114.81 407.16,114.81" fill="#1B1A16" opacity="0.6"/><text x="397.16" y="102.66" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">D2</text>
+<polygon points="327.69,114.81 327.69,98.02 307.69,98.02 307.69,114.81 327.69,114.81" fill="#1B1A16" opacity="0.6"/><text x="317.69" y="102.66" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">D3</text>
+<polygon points="64.58,167.42 64.58,150.63 44.58,150.63 44.58,167.42 64.58,167.42" fill="#1B1A16" opacity="0.6"/><text x="54.58" y="155.28" font-size="6.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#FFFFFF" letter-spacing="0.0" text-anchor="middle">W1</text>
 <line x1="86.70" y1="40.00" x2="540.27" y2="40.00" stroke="#141310" stroke-width="0.17"/><line x1="86.70" y1="38.70" x2="86.70" y2="41.30" stroke="#141310" stroke-width="0.17"/><line x1="540.27" y1="38.70" x2="540.27" y2="41.30" stroke="#141310" stroke-width="0.17"/><text x="313.49" y="39.00" font-size="2.5" font-family="Helvetica, Arial, sans-serif" fill="#141310" text-anchor="middle">25400 clear at the north wall</text>
 <line x1="86.70" y1="216.86" x2="499.56" y2="216.86" stroke="#141310" stroke-width="0.17"/><line x1="86.70" y1="215.56" x2="86.70" y2="218.16" stroke="#141310" stroke-width="0.17"/><line x1="499.56" y1="215.56" x2="499.56" y2="218.16" stroke="#141310" stroke-width="0.17"/><text x="293.13" y="215.86" font-size="2.5" font-family="Helvetica, Arial, sans-serif" fill="#141310" text-anchor="middle">23120 clear at the south wall</text>
 <line x1="548.27" y1="208.86" x2="548.27" y2="46.00" stroke="#141310" stroke-width="0.17"/><line x1="546.97" y1="208.86" x2="549.57" y2="208.86" stroke="#141310" stroke-width="0.17"/><line x1="546.97" y1="46.00" x2="549.57" y2="46.00" stroke="#141310" stroke-width="0.17"/><text x="547.17" y="127.43" font-size="2.5" font-family="Helvetica, Arial, sans-serif" fill="#141310" text-anchor="middle" transform="rotate(-90 547.17 127.43)">9120</text>
@@ -139,19 +134,21 @@
 <g transform="translate(518.84 55.29)"><path d="M0,-5.5 L2.8,3.6 L0,1.8 L-2.8,3.6 Z" fill="#141310"/><text y="8" font-size="2.8" font-family="Helvetica, Arial" text-anchor="middle" fill="#141310">N</text></g>
 <line x1="30.0" y1="224.0" x2="564.0" y2="224.0" stroke="#DCD8CE" stroke-width="0.5"/>
 <text x="30.00" y="236.00" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">FLAGSHIPS INSIDE</text>
-<text x="104.00" y="236.00" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">4</text>
+<text x="104.00" y="236.00" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">3</text>
 <text x="30.00" y="243.40" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">PLUS THE WORKSHOP BAY</text>
 <text x="104.00" y="243.40" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">1</text>
 <text x="30.00" y="250.80" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">EVERY VEHICLE OPENS</text>
-<text x="104.00" y="250.80" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">1 door, in place</text>
+<text x="104.00" y="250.80" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">both doors</text>
 <text x="30.00" y="258.20" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">STREET PITCH</text>
 <text x="104.00" y="258.20" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">4170 mm</text>
 <text x="30.00" y="265.60" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">CLEARANCE AT FITTINGS</text>
 <text x="104.00" y="265.60" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">600 mm minimum</text>
 <text x="30.00" y="273.00" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">DRIVE AISLE</text>
-<text x="104.00" y="273.00" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">2934 mm</text>
-<text x="30.00" y="280.40" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">TIGHTEST POINT DRIVING OUT</text>
-<text x="104.00" y="280.40" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">58 mm</text>
+<text x="104.00" y="273.00" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">2440 mm</text>
+<text x="30.00" y="280.40" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">ANY VEHICLE, ANY ORDER</text>
+<text x="104.00" y="280.40" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">yes</text>
+<text x="30.00" y="287.80" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.7" text-anchor="start">TIGHTEST POINT DRIVING OUT</text>
+<text x="104.00" y="287.80" font-size="3.2" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.0" text-anchor="end">45 mm</text>
 <text x="126.00" y="236.00" font-size="2.9" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.8" text-anchor="start">FLOOR MARKING SCHEDULE</text>
 <rect x="126.0" y="240.6" width="9" height="4.6" fill="url(#hz)"/>
 <text x="139.00" y="244.00" font-size="2.8" font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#141310" letter-spacing="0.0" text-anchor="start">Black / yellow hatch</text>
@@ -172,33 +169,37 @@
 <text x="139.00" y="291.00" font-size="2.8" font-family="Helvetica, Arial, sans-serif" font-weight="600" fill="#141310" letter-spacing="0.0" text-anchor="start">Red / white hatch</text>
 <text x="139.00" y="294.70" font-size="2.5" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">Fire point and electrical panel.</text>
 <text x="276.00" y="236.00" font-size="2.9" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.8" text-anchor="start">DAILY SEQUENCE</text>
-<text x="276.00" y="244.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">1. Drive in, turn into the aisle, reverse into</text>
-<text x="282.00" y="247.90" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">any free stand.</text>
-<text x="276.00" y="253.20" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">2. Any stand can be taken or vacated at any</text>
-<text x="282.00" y="257.10" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">time.</text>
-<text x="276.00" y="262.40" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">3. Doors all open east; the end stand opens</text>
-<text x="282.00" y="266.30" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">into free floor.</text>
-<text x="276.00" y="271.60" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">4. Weighing and loading runs on the north</text>
-<text x="282.00" y="275.50" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">strip, undisturbed.</text>
-<text x="276.00" y="280.80" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">5. Pull a vehicle onto the aisle to open both</text>
-<text x="282.00" y="284.70" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">doors for service.</text>
+<text x="276.00" y="244.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">1. Overnight: three Flagships inside on the</text>
+<text x="282.00" y="247.90" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">diagonal, the farm vehicle in the workshop</text>
+<text x="282.00" y="251.80" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">bay.</text>
+<text x="276.00" y="257.10" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">2. The other seven stand in the yard, west of</text>
+<text x="282.00" y="261.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">the workshop, both doors open.</text>
+<text x="276.00" y="266.30" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">3. Morning: the three inside load and leave,</text>
+<text x="282.00" y="270.20" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">in any order.</text>
+<text x="276.00" y="275.50" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">4. Three from the yard come in and take the</text>
+<text x="282.00" y="279.40" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">empty stands.</text>
+<text x="276.00" y="284.70" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">5. Repeat. Bring the second shift of operators</text>
+<text x="282.00" y="288.60" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">in as the first leaves.</text>
 <text x="408.00" y="236.00" font-size="2.9" font-family="Helvetica, Arial, sans-serif" font-weight="700" fill="#141310" letter-spacing="0.8" text-anchor="start">NOTES</text>
-<text x="408.00" y="244.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">Four inside plus the workshop bay. The</text>
-<text x="412.00" y="247.90" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">least dense of the four and the only one</text>
-<text x="412.00" y="251.80" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">with genuinely independent access.</text>
-<text x="408.00" y="257.70" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">A 2934 mm drive aisle runs the length of</text>
-<text x="412.00" y="261.60" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">the hall, so any vehicle can leave or</text>
-<text x="412.00" y="265.50" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">return at any time without moving another.</text>
-<text x="408.00" y="271.40" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">Stands are at 3232 mm centres, which is</text>
-<text x="412.00" y="275.30" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">what one open door needs: 2068 mm of door</text>
-<text x="412.00" y="279.20" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">plus 1014 mm of neighbour plus 150 mm.</text>
-<text x="408.00" y="285.10" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">The turn out of a stand into the aisle is</text>
-<text x="412.00" y="289.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">the tightest move in any of these schemes.</text>
-<text x="412.00" y="292.90" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">It is a single left hand sweep at the 3158</text>
-<text x="412.00" y="296.80" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">mm rear axle radius, and it uses the full</text>
-<text x="412.00" y="300.70" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">width of the aisle.</text>
-<text x="408.00" y="306.60" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">Choose this if vehicles return at</text>
-<text x="412.00" y="310.50" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">scattered times and the fleet stays at</text>
-<text x="412.00" y="314.40" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">four or five.</text>
+<text x="408.00" y="244.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">Three inside plus the farm vehicle in the</text>
+<text x="412.00" y="247.90" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">workshop bay, and seven in the yard: ten</text>
+<text x="412.00" y="251.80" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">vehicles, both doors open on all of them,</text>
+<text x="412.00" y="255.70" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">none of them blocking another.</text>
+<text x="408.00" y="261.60" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">The yard is where this scheme lives or</text>
+<text x="412.00" y="265.50" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">dies. Seven stands abreast with both doors</text>
+<text x="412.00" y="269.40" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">open need 4285 mm of frontage each, so 30</text>
+<text x="412.00" y="273.30" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">m in one rank, or about 15 x 17 m as two</text>
+<text x="412.00" y="277.20" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">ranks of four facing one aisle.</text>
+<text x="408.00" y="283.10" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">The site model does not carry a yard</text>
+<text x="412.00" y="287.00" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">boundary, so those figures are what the</text>
+<text x="412.00" y="290.90" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">formation needs, not what the yard has.</text>
+<text x="412.00" y="294.80" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">Chalk it out before committing.</text>
+<text x="408.00" y="300.70" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">The turnover is the point: three go, three</text>
+<text x="412.00" y="304.60" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">replace them, and the shed never has more</text>
+<text x="412.00" y="308.50" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">than three loading at once. That is the</text>
+<text x="412.00" y="312.40" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">constraint, not a choice.</text>
+<text x="408.00" y="318.30" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#141310" letter-spacing="0.0" text-anchor="start">The farm vehicle is 4373 x 1813 x 1953</text>
+<text x="412.00" y="322.20" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">with no doors, so it parks in the workshop</text>
+<text x="412.00" y="326.10" font-size="2.6" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">bay without a swing to allow for.</text>
 <text x="30.00" y="408.00" font-size="2.4" font-family="Helvetica, Arial, sans-serif" font-weight="400" fill="#6E6A5E" letter-spacing="0.0" text-anchor="start">Geometry read directly from Hardware Designs/Warehouse Design.3dm saved 31 Aug 2026 18:43. All dimensions in millimetres.</text>
 </svg>

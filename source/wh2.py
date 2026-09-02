@@ -165,16 +165,60 @@ class Flagship:
         return box(a, cls.Y_DOOR_R, b, cls.Y_DOOR_F)
 
 
+
+# ------------------------------------------------------- the farm vehicle
+class Farm:
+    """Zusha cargo-trike v1, the farm vehicle. Read from the block instance
+    placed in Warehouse Design.3dm on 2 Sep 2026: 4373 x 1813 x 1953 overall.
+    Same chassis as the Flagship - 2650 wheelbase, 960 rear track - so it
+    turns the same. Open flatbed: no doors, nothing to swing."""
+    LENGTH = 4373.0
+    WIDTH = 1813.0
+    HEIGHT = 1953.0
+    WHEELBASE = 2650.0
+    X_TRACK = 480.0
+    STEER_MAX = math.radians(40.0)
+
+    # rear-axle frame, matching the Flagship convention
+    Y_NOSE = 2650.0 + 440.0            # front axle plus the front tyre radius
+    Y_TAIL = Y_NOSE - LENGTH           # -1283
+    X_HALF = WIDTH / 2.0               # 906.5
+    Z_TOP = HEIGHT
+
+    @classmethod
+    def poly_body(cls):
+        return box(-cls.X_HALF, cls.Y_TAIL, cls.X_HALF, cls.Y_NOSE)
+
+    @classmethod
+    def poly_hull(cls):
+        return cls.poly_body()
+
+    @classmethod
+    def poly_canopy(cls):
+        return cls.poly_body()
+
+    @classmethod
+    def poly_module(cls):
+        return cls.poly_body()
+
+    @classmethod
+    def poly_door(cls, side):
+        return Polygon()
+
+
 # ------------------------------------------------------------------ placing
 class Veh:
     """(u, v) is the rear-axle centre. hdg deg, 0 = nose north, ccw positive.
     doors is a subset of {'L','R'} that are open in the parked state."""
 
-    def __init__(self, name, u, v, hdg, doors=("R",), label=None, note=""):
+    def __init__(self, name, u, v, hdg, doors=("R",), label=None, note="",
+                 kind="flagship"):
         self.name, self.u, self.v, self.hdg = name, float(u), float(v), float(hdg)
         self.doors = tuple(doors)
         self.label = label or name
         self.note = note
+        self.kind = kind
+        self.cls = Farm if kind == "farm" else Flagship
 
     @classmethod
     def from_module_centre(cls, name, mu, mv, hdg, **kw):
@@ -187,14 +231,14 @@ class Veh:
         return affinity.translate(
             affinity.rotate(poly, self.hdg, origin=(0, 0)), self.u, self.v)
 
-    def body(self):   return self._p(Flagship.poly_body())
-    def hull(self):   return self._p(Flagship.poly_hull())
-    def module(self): return self._p(Flagship.poly_module())
-    def canopy(self): return self._p(Flagship.poly_canopy())
+    def body(self):   return self._p(self.cls.poly_body())
+    def hull(self):   return self._p(self.cls.poly_hull())
+    def module(self): return self._p(self.cls.poly_module())
+    def canopy(self): return self._p(self.cls.poly_canopy())
     def upper(self):
         return unary_union([self.canopy(), self.module()])
 
-    def door(self, s): return self._p(Flagship.poly_door(s))
+    def door(self, s): return self._p(self.cls.poly_door(s))
 
     def doors_poly(self):
         ds = [self.door(s) for s in self.doors]
@@ -205,8 +249,8 @@ class Veh:
 
     def nose(self):
         a = math.radians(self.hdg)
-        return (self.u - Flagship.Y_NOSE * math.sin(a),
-                self.v + Flagship.Y_NOSE * math.cos(a))
+        return (self.u - self.cls.Y_NOSE * math.sin(a),
+                self.v + self.cls.Y_NOSE * math.cos(a))
 
     def fwd(self):
         a = math.radians(self.hdg)
@@ -214,7 +258,8 @@ class Veh:
 
     def as_dict(self):
         return dict(name=self.name, u=self.u, v=self.v, hdg=self.hdg,
-                    doors=list(self.doors), label=self.label, note=self.note)
+                    doors=list(self.doors), label=self.label, note=self.note,
+                    kind=self.kind)
 
 
 # ------------------------------------------------------------------- checks
