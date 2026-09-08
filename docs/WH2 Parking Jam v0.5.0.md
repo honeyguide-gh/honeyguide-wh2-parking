@@ -1,33 +1,43 @@
-# WH2 Tricycle Parking, v0.4.0
+# WH2 Tricycle Parking, v0.5.0
 
-Hardware, 2 September 2026. Michael Kissi Danquah.
-Built against `Hardware Designs/Warehouse Design.3dm` saved 2 Sep 2026 01:56,
-which now carries the farm vehicle as well as the Flagships.
+Hardware, 8 September 2026. Michael Kissi Danquah.
+Built against `Hardware Designs/Warehouse Design.3dm` saved 8 Sep 2026 10:24,
+which carries your new layout, the farm vehicle and all ten Flagships.
 All geometry read from that file at 1:1. Millimetres throughout.
 
 ---
 
 ## The answer first
 
-The review asked for two things at once: **both doors open on every parked
-vehicle**, so they can all load before checkout, and **any vehicle in or out
-in any order**, so the morning juggling stops.
+**Your 8 September layout is Scheme 5, read straight out of the model.** Five
+Flagships inside plus the farm vehicle, one in the workshop bay and four in the
+yard. Every axle centre and heading below comes from the vehicle's own three
+wheels in your file: the rear pair 960 mm apart gives the axle, the single front
+wheel 2650 mm ahead gives the heading. Nothing is fitted or rounded.
 
-Both are achievable. Together they cost five vehicles.
+It does not yet meet the two constraints, and there are three specific reasons.
+All three are fixable, and one of them is 300 mm of work.
 
-| Flagships inside the hall | Fixed order, as now | Any order, nobody moves |
-|---|---|---|
-| **One door open** | **8** | 4 |
-| **Both doors open** | **6** | **3** |
+**1. The gate is blocked, by 71 mm.** The farm vehicle's body reaches
+v = 5693 and the gate opening ends at v = 7650, leaving **1957 mm** where a
+Flagship needs 2028. Nothing can get in or out past it. Move the farm vehicle
+about 300 mm south and the building works: with it out of the way, **all five
+inside vehicles drive out in any order**, which is exactly what the review
+asked for.
 
-Every cell was verified the same way: static fit with 600 mm of working
-clearance at every fitting, then a manoeuvre planned out of the gate for each
-vehicle with everything else still parked and its doors open, then the whole
-path replayed pose by pose in exact polygon geometry.
+**2. Both doors will not open.** At 3494 mm along a 45 degree row, each
+vehicle's door passes **0.63 m² into the next vehicle's body**. It is not tight,
+it is through it. Both doors open at that angle needs **4600 mm**, which is
+1106 mm more per stand. D4 and N1's doors overlap each other by 0.11 m² as well.
 
-**So: three inside plus the workshop bay, if both constraints hold.** Ten
-vehicles is still reachable, but only by moving the loading formation out to
-the yard. That is Scheme 4.
+**3. Three vehicles stand inside a 600 mm working strip.** D1 is 359 mm from
+Fridge 2, D2 is 279 mm from the crate rack, and the farm vehicle is 314 mm from
+the office. N1's body is 60 mm off the east wall.
+
+The arithmetic behind point 2 is the same one that caps the building at three:
+four stands at 4600 mm need 13.8 m of row, and the row would run past the east
+wall. **So the choice is five inside with the doors opened one at a time, or
+three inside with all doors open at once.** Both are drawn here.
 
 ---
 
@@ -71,6 +81,7 @@ It misses by 900 mm, so no amount of angle-tuning reaches it.
 | 2 | Two Streets, Both Doors | 6 | yes | no | 41 mm |
 | 3 | Two Streets, One Door | 8 | no | no | 41 mm |
 | 4 | **Three In, Seven Out** | 3 + 7 in the yard | yes | **yes** | 45 mm |
+| 5 | **As Drawn, 8 September** | 5 + the farm vehicle | no, they foul | blocked at the gate | see above |
 
 ### Scheme 1, Diagonal Three
 
@@ -174,7 +185,37 @@ Three points, in order of how much they change the plan.
 
 ---
 
+## Scheme 5, as drawn, in numbers
+
+Axle centre and heading of every vehicle, read from the model:
+
+| | u | v | heading | doors |
+|---|---|---|---|---|
+| D1 | 10767.1 | 3048.7 | 45.24° | both open |
+| D2 | 14261.2 | 3048.7 | 45.24° | both open |
+| D3 | 17764.8 | 3048.7 | 45.24° | both open |
+| D4 | 21256.0 | 3048.7 | 45.24° | both open |
+| N1 | 22960.7 | 6817.5 | 90.08° | both open |
+| Z1, farm | 4321.1 | 4784.6 | 90.08° | none fitted |
+| W1, workshop | −1826.1 | 3008.8 | 180.00° | shut |
+| Y1 to Y4, yard | −10732.2, −13325.7, −15864.9, −18291.7 | ≈5830 | 0.08° | shut |
+
+Heading 0 is nose north, counting anticlockwise, so the four on the diagonal
+point north-west and N1, Z1 point west. Spacing along the diagonal row is 3494,
+3504 and 3491 mm.
+
+One difference from the model worth flagging: **your file has both doors open on
+the four yard vehicles too.** They are drawn here with doors shut, as you
+instructed.
+
 ## Change log
+
+**v0.5.0, 8 Sep 2026.** Added Scheme 5, your 8 September Rhino layout, read
+out of the model by locating each vehicle's three wheels. Found three reasons it
+does not yet meet the constraints: the farm vehicle blocks the gate by 71 mm,
+the diagonal row is 1106 mm per stand too tight for both doors, and three
+vehicles stand inside a 600 mm working strip. With the farm vehicle moved, all
+five inside drive out in any order.
 
 **v0.4.0, 2 Sep 2026.** Both doors open on every parked vehicle, and any-order
 access, both made hard constraints after the review. Added the farm vehicle

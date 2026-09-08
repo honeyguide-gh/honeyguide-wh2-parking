@@ -664,14 +664,14 @@ function renderRail(){
   document.getElementById('s-key').textContent = 'Scheme '+idx+' of '+D.schemes.length;
   document.getElementById('s-name').textContent = s.name.split(' - ')[1];
   document.getElementById('s-tag').textContent = s.tag;
-  var facts = [['Flagships inside', String(s.inside), true],
+  var facts = [['Flagships inside', s.inside_label || String(s.inside), true],
     ['Plus the workshop bay', '1'],
-    ['Doors open in place', 'both, every vehicle'],
-    ['Clearance at fittings', '600 mm'],
+    ['Doors open in place', s.doors_label || 'both, every vehicle'],
+    ['Clearance at fittings', s.asdrawn ? 'three are short' : '600 mm'],
     [s.lane_name || 'Drive aisle', s.aisle ? s.aisle+' mm' : 'none'],
-    ['Any vehicle, any order', s.anyorder ? 'yes' : 'no, fixed order',
+    ['Any vehicle, any order', s.order_label || 'no, fixed order',
      !!s.anyorder],
-    ['Tightest point driving out', s.tight + ' mm']];
+    ['Tightest point driving out', s.tight_label || (s.tight + ' mm')]];
   document.getElementById('s-facts').innerHTML = facts.map(function(f){
     return '<div>'+f[0]+'</div><b'+(f[2]?' class="hi"':'')+'>'+f[1]+'</b>'; }).join('');
   document.getElementById('s-seq').innerHTML =

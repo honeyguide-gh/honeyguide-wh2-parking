@@ -266,19 +266,25 @@ def panel(s, y0):
     inside = [v for v in s["vehicles"] if not v.name.startswith("W")]
     o.append(f'<line x1="{x}" y1="{y0-8}" x2="{SHEET_W-30}" y2="{y0-8}" '
              f'stroke="#DCD8CE" stroke-width="0.5"/>')
-    facts = [("Flagships inside", f"{len(inside)}"),
+    n_flag = len([v for v in inside if v.kind != "farm" and v.u > 0])
+    n_farm = len([v for v in inside if v.kind == "farm"])
+    facts = [("Flagships inside", f"{n_flag}" + (f" + {n_farm} farm" if n_farm else "")),
              ("Plus the workshop bay", "1"),
              ("Every vehicle opens",
-              "both doors" if all(len(v.doors) == 2 or not v.doors
-                                  for v in inside) else "1 door, in place"),
+              ("both doors, the five inside" if s["key"] == "drawn" else
+               "both doors" if any(len(v.doors) == 2 for v in inside)
+               else "1 door, in place")),
              ("Street pitch", f"{S.PITCH:.0f} mm"),
              ("Clearance at fittings", "600 mm minimum"),
              ("Walkway between rows" if s["key"] in ("streets", "both")
               else "Drive aisle",
               f"{s['aisle']:.0f} mm" if s["aisle"] else "none"),
              ("Any vehicle, any order",
-              "yes" if s["key"] in ("diag", "waves") else "no, fixed order"),
-             ("Tightest point driving out", f"{s.get('tight', 0):.0f} mm")]
+              "yes" if s["key"] in ("diag", "waves") else
+              ("blocked at the gate" if s["key"] == "drawn" else "no, fixed order")),
+             ("Tightest point driving out",
+              "see notes" if s["key"] == "drawn"
+              else f"{s.get('tight', 0):.0f} mm")]
     cy = y0 + 4
     for k, v in facts:
         o.append(stxt(x, cy, k.upper(), 2.4, C["faint"], ls=0.7))
@@ -362,6 +368,20 @@ def render(s):
 
 
 META = {
+ "drawn": dict(
+   sequence=[
+     "Four Flagships on the diagonal at 45 degrees, 3494 mm apart along the row.",
+     "A fifth stands nose-west against the east wall, and the farm vehicle west of the crates.",
+     "Five more outside: one in the workshop bay and four in the yard, doors shut.",
+     "Read straight out of the Rhino model of 8 Sep: every axle centre and heading",
+     "comes from the vehicle's own three wheels, nothing fitted or rounded."],
+   notes=[
+     "Five Flagships inside plus the farm vehicle, ten Flagships in the fleet. This is your layout as the model has it, not a redesign of it.",
+     "The gate is blocked. The farm vehicle's body reaches v = 5693 and the gate opening ends at 7650, so 1957 mm is left where a Flagship needs 2028. Move it about 300 mm south and the building works: with it out of the way, all five inside vehicles drive out in any order.",
+     "Both doors will not open. At 3494 mm on a 45 degree row each door passes 0.63 m2 into the next vehicle's body; both doors open needs 4600 mm at that angle, which is 1106 mm more per stand. D4 and N1's doors overlap by 0.11 m2 as well.",
+     "Three vehicles stand inside a 600 mm working strip: D1 is 359 mm from Fridge 2, D2 is 279 mm from the crate rack, and the farm vehicle is 314 mm from the office. N1's body is 60 mm off the east wall.",
+     "The model shows both doors open on the four yard vehicles too. Drawn here with them shut, as instructed."]),
+
  "diag": dict(
    sequence=[
      "Three stands on the diagonal, at 145 degrees on a 4450 mm pitch.",
@@ -420,18 +440,25 @@ META = {
 if __name__ == "__main__":
     os.makedirs("out", exist_ok=True)
     import sequence as Q, audit_paths as AU
+    base_scale, base_ox = SCALE, OX
     for f in S.SCHEMES:
         s = f()
         s.update(META[s["key"]])
+        globals()["SCALE"] = s.get("scale", base_scale)
+        globals()["OX"] = s.get("ox", base_ox)
         inside = [v for v in s["vehicles"] if not v.name.startswith("W")]
-        if s["key"] in ("diag", "waves"):
+        if s["key"] == "drawn":
+            paths, ex = {}, []
+            s["tight"] = 0
+        elif s["key"] in ("diag", "waves"):
             from independent import free_to_leave
             _, _, paths = free_to_leave(inside)
             ex = [v.name for v in inside]
         else:
             ex, paths, bad = Q.solve(s, verbose=False)
-        _, tight = AU.audit(s, ex, paths, verbose=False)
-        s["tight"] = tight
+        if ex:
+            _, tight = AU.audit(s, ex, paths, verbose=False)
+            s["tight"] = tight
         fn = f"out/plan_{s['key']}.svg"
         open(fn, "w").write(render(s))
         print("wrote", fn)

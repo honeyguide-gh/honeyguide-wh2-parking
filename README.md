@@ -1,6 +1,6 @@
 # WH2 Tricycle Parking
 
-Parking layout study for the Honeyguide WH2 warehouse, Accra. Four schemes,
+Parking layout study for the Honeyguide WH2 warehouse, Accra. Five schemes,
 each checked twice: that it fits, and that a driver can get every vehicle back
 out through the gate.
 
@@ -33,6 +33,16 @@ pitch is 4170, so two leaves in a line never meet.
 | 2 | Two Streets, Both Doors | 6 | yes | no | 41 mm |
 | 3 | Two Streets, One Door | 8 | no | no | 41 mm |
 | 4 | Three In, Seven Out | 3 + 7 in the yard | yes | **yes** | 45 mm |
+| 5 | **As Drawn, 8 September** | 5 + the farm vehicle | no, they foul | blocked at the gate | see notes |
+
+Scheme 5 is the 8 September Rhino layout, read straight out of the model: every
+axle centre and heading comes from that vehicle's own three wheels. It holds five
+Flagships inside plus the farm vehicle, but it does not yet meet the two
+constraints. The farm vehicle blocks the gate by 71 mm, leaving 1957 mm where a
+Flagship needs 2028; move it about 300 mm south and all five inside drive out in
+any order. The diagonal row is 3494 mm where both doors open needs 4600 mm, so
+each door passes 0.63 m2 into the next vehicle's body. And three vehicles stand
+inside a 600 mm working strip.
 
 Scheme 1 is the review's constraints met exactly: three stands at 145° on a
 4450 mm pitch, both doors open on all three, any of them out at any time.
@@ -92,8 +102,8 @@ python audit_paths.py     # the exact geometric proof
 ```
 
 Geometry read at 1:1 from `Hardware Designs/Warehouse Design.3dm`, saved
-2 Sep 2026 01:56. Millimetres throughout.
+8 Sep 2026 10:24. Millimetres throughout.
 
 ---
 
-Honeyguide Ghana Ltd, Hardware. v0.4.0, 2 September 2026.
+Honeyguide Ghana Ltd, Hardware. v0.5.0, 8 September 2026.

@@ -212,13 +212,14 @@ class Veh:
     doors is a subset of {'L','R'} that are open in the parked state."""
 
     def __init__(self, name, u, v, hdg, doors=("R",), label=None, note="",
-                 kind="flagship"):
+                 kind="flagship", doors_required=True):
         self.name, self.u, self.v, self.hdg = name, float(u), float(v), float(hdg)
         self.doors = tuple(doors)
         self.label = label or name
         self.note = note
         self.kind = kind
         self.cls = Farm if kind == "farm" else Flagship
+        self.doors_required = doors_required and kind != "farm"
 
     @classmethod
     def from_module_centre(cls, name, mu, mv, hdg, **kw):
@@ -287,7 +288,7 @@ def check(vehicles, verbose=True, hall=HALL):
             if not work.is_empty and b.intersects(work.buffer(-1.0)):
                 issues.append(f"FAIL {v.label}: {b.distance(f.poly):.0f} mm to "
                               f"{f.name}, needs {CLEAR_HUMAN:.0f}")
-        if not v.doors:
+        if not v.doors and getattr(v, "doors_required", True):
             issues.append(f"FAIL {v.label}: no door can be opened")
 
     for i, a in enumerate(vehicles):

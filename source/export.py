@@ -95,11 +95,21 @@ def build():
                   "WIDTH_CLOSED", "WIDTH_OPEN", "DOOR_LEN")},
         schemes=[])
     import sequence as Q
+    from independent import free_to_leave
     for f in S.SCHEMES:
         s = f()
         s.update(P.META[s["key"]])
         inside = [v for v in s["vehicles"] if not v.name.startswith("W")]
-        if s["key"] in ("diag", "waves"):
+        if s["key"] == "drawn":
+            from wh2 import Veh
+            inside = [v for v in s["vehicles"] if v.u > 0]
+            shut = [Veh(v.name, v.u, v.v, v.hdg, doors=(), label=v.label,
+                        kind=v.kind, doors_required=False)
+                    for v in inside if v.name != "Z1"]
+            nfree, bad, paths = free_to_leave(shut)
+            ex = [v.name for v in shut]
+            s = dict(s); s["vehicles"] = shut
+        elif s["key"] in ("diag", "waves"):
             from independent import free_to_leave
             nfree, bad, paths = free_to_leave(inside)
             if bad:
@@ -112,8 +122,12 @@ def build():
         order = list(reversed(ex))          # arrival is the exit run backwards
         import audit_paths as AU
         bad, tight = AU.audit(s, ex, paths, verbose=False)
-        if bad:
+        if bad and s["key"] != "drawn":
             raise SystemExit("\n".join(bad))
+        if s["key"] == "drawn":
+            s = f()
+            s.update(P.META[s["key"]])
+            inside = [v for v in s["vehicles"] if v.u > 0]
         d["schemes"].append(dict(
             key=s["key"], name=s["name"], tag=s["tag"],
             notes=s["notes"], sequence=s["sequence"],
@@ -122,6 +136,18 @@ def build():
             lane_name=("Walkway between the rows" if s["key"] in ("streets", "both")
                        else "Drive aisle"),
             anyorder=s["key"] in ("diag", "waves"),
+            asdrawn=s["key"] == "drawn",
+            inside_label=("5 + 1 farm" if s["key"] == "drawn"
+                          else str(len(inside))),
+            doors_label=("both, the five inside" if s["key"] == "drawn"
+                         else "both, every vehicle"
+                         if all(len(v.doors) == 2 for v in inside)
+                         else "one, every vehicle"),
+            order_label=("blocked at the gate" if s["key"] == "drawn"
+                         else "yes" if s["key"] in ("diag", "waves")
+                         else "no, fixed order"),
+            tight_label=("see notes" if s["key"] == "drawn"
+                         else f"{int(round(tight))} mm"),
             vehicles=[v.as_dict() for v in s["vehicles"]],
             order=order,
             exit_order=ex,

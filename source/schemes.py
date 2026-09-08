@@ -102,7 +102,50 @@ def scheme_waves():
                 tag="Wave one inside, wave two in the yard, both doors open")
 
 
-SCHEMES = [scheme_diagonal, scheme_bothstreets, scheme_onedoor, scheme_waves]
+
+# --------------------------------------------------------------- as drawn
+# Read out of Warehouse Design.3dm saved 8 Sep 2026 10:24, by finding every
+# vehicle's three wheels: the rear pair 960 apart gives the axle centre, the
+# single front wheel 2650 ahead gives the heading. Nothing here is fitted or
+# rounded - these are the model's own positions.
+AS_DRAWN_INSIDE = [
+    ("D1", 10767.1, 3048.7, 45.24),
+    ("D2", 14261.2, 3048.7, 45.24),
+    ("D3", 17764.8, 3048.7, 45.24),
+    ("D4", 21256.0, 3048.7, 45.24),
+    ("N1", 22960.7, 6817.5, 90.08),
+]
+AS_DRAWN_FARM = ("Z1", 4321.1, 4784.6, 90.08)
+AS_DRAWN_SHUT = [
+    ("W1", -1826.1, 3008.8, 180.00),      # workshop bay
+    ("Y1", -10732.2, 5832.4, 0.08),       # the yard, west of the workshop
+    ("Y2", -13325.7, 5815.3, 0.08),
+    ("Y3", -15864.9, 5838.4, 0.08),
+    ("Y4", -18291.7, 5826.1, 0.08),
+]
+
+
+def as_drawn():
+    """Michael's 8 Sep layout, exactly as the model has it."""
+    v = [Veh(n, u, w, h, doors=("R", "L"), label=n)
+         for n, u, w, h in AS_DRAWN_INSIDE]
+    n, u, w, h = AS_DRAWN_FARM
+    v.append(Veh(n, u, w, h, doors=(), kind="farm", label=n,
+                 note="farm vehicle, no doors"))
+    v += [Veh(nm, u, w, h, doors=(), label=nm, doors_required=False,
+              note="doors shut" + (", workshop bay" if nm == "W1" else ", yard"))
+          for nm, u, w, h in AS_DRAWN_SHUT]
+    return v
+
+
+def scheme_asdrawn():
+    return dict(key="drawn", name="Scheme 5 - As Drawn, 8 September",
+                vehicles=as_drawn(), aisle=2800.0, rows=1, scale=88.0, ox=256.6,
+                tag="Michael's Rhino layout: five inside plus the farm vehicle")
+
+
+SCHEMES = [scheme_diagonal, scheme_bothstreets, scheme_onedoor,
+           scheme_waves, scheme_asdrawn]
 
 
 if __name__ == "__main__":
