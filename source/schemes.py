@@ -20,7 +20,8 @@ appear in both scenarios, under the same names, standing in different places.
   four on the north row, HG3 by the gate. Doors open - the three that spent
   the day in the runway open theirs only once they are back in.
 """
-from wh2 import Flagship as F, Farm as Z, Veh, HALL, FREE, FACILITIES, GATE
+from wh2 import (Flagship as F, Farm as Z, Bike as B, Veh, HALL, FREE,
+                 FACILITIES, GATE)
 
 # ---------------------------------------------------------- the CAD figures
 # the diagonal row, identical in both models
@@ -49,6 +50,14 @@ RUNWAY = [
 ]
 HG3_OUT = ("HG3", -10056.5, 6133.2, 0.08)
 
+# HGF, the two CG125 bikes with rear boxes. They stand in the north-west
+# corner, nose east, in exactly the same place in both models - rear-wheel
+# centres read straight off the model.
+HGF = [
+    ("HGF1", 1593.9, 8141.8, 270.0),
+    ("HGF2", 1593.9, 8714.2, 270.0),
+]
+
 BOTH = ("R", "L")
 
 
@@ -63,11 +72,17 @@ def _hg3(spec, note=""):
     return Veh(n, u, v, h, doors=(), label=n, kind="farm", note=note)
 
 
+def _bikes(note="parked in the north-west corner"):
+    return [Veh(n, u, v, h, doors=(), label=n, kind="bike", note=note)
+            for n, u, v, h in HGF]
+
+
 # ------------------------------------------------------------- Scenario 1
 def opening():
     """Warehouse Design V2. Five loading inside, four waiting in the runway."""
     vs = [_flag(s, BOTH, note="loading, both doors open") for s in DIAGONAL]
     vs.append(_flag(NORTH[0], BOTH, note="loading, both doors open"))
+    vs += _bikes()
     for s in RUNWAY:
         vs.append(_flag(s, (), note="in the runway, doors shut"))
     vs.append(_hg3(HG3_OUT, note="in the runway, cargo vehicle"))
@@ -77,9 +92,9 @@ def opening():
 def scheme_opening():
     return dict(key="open", name="Scenario 1 - Opening",
                 vehicles=opening(),
-                inside=[v.name for v in opening()[:5]],
-                aisle=2800.0, rows=1, scale=88.0, ox=256.6,
-                tag="Five loading inside with both doors open, four in the runway")
+                inside=[v.name for v in opening() if v.u > 0],
+                aisle=2800.0, rows=1, scale=84.0, ox=256.2,
+                tag="Five Flagships loading with both doors open, four waiting in the runway")
 
 
 # ------------------------------------------------------------- Scenario 2
@@ -90,6 +105,7 @@ def closing():
     vs += [_flag(s, BOTH, note="parked for the night, both doors open")
            for s in NORTH]
     vs.append(_hg3(HG3_IN, note="parked by the gate, cargo vehicle"))
+    vs += _bikes()
     return vs
 
 
@@ -97,8 +113,8 @@ def scheme_closing():
     return dict(key="close", name="Scenario 2 - Closing",
                 vehicles=closing(),
                 inside=[v.name for v in closing()],
-                aisle=2800.0, rows=1, scale=88.0, ox=256.6,
-                tag="All nine inside for the night, HG3 last in by the gate")
+                aisle=2800.0, rows=1, scale=60.0, ox=85.5,
+                tag="Every vehicle inside for the night, HG3 last in by the gate")
 
 
 SCENARIOS = [scheme_opening, scheme_closing]

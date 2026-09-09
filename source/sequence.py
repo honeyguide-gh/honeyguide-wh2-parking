@@ -24,7 +24,7 @@ def solve(scheme, prefer=None, verbose=True):
             v = by[nm]
             still = [by[o] for o in left if o != nm]
             f = P.Field(still)
-            nodes, n = P.plan((v.u, v.v, v.hdg), f)
+            nodes, n = P.plan((v.u, v.v, v.hdg), f, kind=v.kind)
             if nodes:
                 got = (nm, nodes, n)
                 break

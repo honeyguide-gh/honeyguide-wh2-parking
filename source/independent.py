@@ -10,7 +10,7 @@ def free_to_leave(vehicles, verbose=False):
     for v in vehicles:
         others = [x for x in vehicles if x is not v]
         f = PL.Field(others)
-        nodes, n = PL.plan((v.u, v.v, v.hdg), f)
+        nodes, n = PL.plan((v.u, v.v, v.hdg), f, kind=v.kind)
         if nodes:
             p = PL.densify(nodes)
             p += PL.run_out(p[-1])

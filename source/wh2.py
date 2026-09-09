@@ -27,10 +27,8 @@ def east_wall_u(v):
 # vehicle gate, west wall
 GATE = (4900.0, 7650.0, 3500.0)      # v0, v1, clear height
 
-# ------------------------------------------------------------- the workshop
-WORKSHOP = box(-3398.0, -198.0, -200.0, 4698.0)     # 3198 x 4896 inside
-WORKSHOP_H = 3139.0
-WORKSHOP_ROOF = 3500.0
+# The outdoor workshop is gone. The shop is now the bench run attached to the
+# office's east face, inside the hall - facility key "shop" below.
 
 # ------------------------------------------------- fixed fittings, main hall
 class Fac:
@@ -38,6 +36,7 @@ class Fac:
         self.key, self.name, self.poly, self.h = key, name, poly, h
         self.faces = faces          # sides a person works from: N S E W
         self.note = note
+        self.zone = (h <= 0.0)      # a floor marking, not something solid
 
     def clearance(self, d=600.0):
         """The working strip a person needs, on the used faces only."""
@@ -60,37 +59,36 @@ class Fac:
 #   * check-in / check-out sits in the north-west corner, by the gate
 FACILITIES = [
     Fac("office",  "Office",               box(0, 0, 7360, 3560),           2640, "NE"),
-    Fac("shop",    "Shop bench",           box(7299.1, 0, 7969.6, 2438.4),   900, "NE"),
+    Fac("shop",    "Shop bench",           box(7299.1, 0, 7969.6, 2438.4),   900, "NE",
+        "the workshop, attached to the office's east face"),
     Fac("shoprig", "Shop equipment",       box(8006.1, 110.9, 8640.5, 754.8), 1265, "NE"),
-    Fac("checkin", "Check-in / check-out", box(1190.9, 7816.1, 3250.1, 9039.9), 1408, "SE"),
+    Fac("checkin", "Check-in / check-out", box(3960.0, 7318.3, 8360.0, 9118.3), 0, "S",
+        "floor zone, 4400 x 1800, drawn on the slab in both models"),
     Fac("fridge1", "Fridge 1",             box(8878.1, 8260.0, 10658.1, 9070.0), 860, "S"),
     Fac("fridge2", "Fridge 2",             box(10701.7, 8240.0, 12651.7, 9070.0), 860, "S"),
     Fac("fridge3", "Fridge 3",             box(12689.7, 8240.0, 14639.7, 9070.0), 860, "S"),
     Fac("crates",  "Food storage crates",  box(16985.3, 8110.0, 20392.1, 9120.0), 600, "S"),
 ]
+ZONES = [f for f in FACILITIES if f.zone]
+SOLIDS = [f for f in FACILITIES if not f.zone]
 
 FAC = {f.key: f for f in FACILITIES}
 
-FIX_SOLID = unary_union([f.poly for f in FACILITIES])
-FIX_KEEP = unary_union([f.poly for f in FACILITIES]
-                       + [f.clearance() for f in FACILITIES])
+FIX_SOLID = unary_union([f.poly for f in SOLIDS])
+FIX_KEEP = unary_union([f.poly for f in SOLIDS]
+                       + [f.clearance() for f in SOLIDS])
 # things an open door may pass over: anything under 1900 mm
-LOW = unary_union([f.poly for f in FACILITIES if f.h < 1900])
-TALL = unary_union([f.poly for f in FACILITIES if f.h >= 1900])
+LOW = unary_union([f.poly for f in SOLIDS if f.h < 1900])
+TALL = unary_union([f.poly for f in SOLIDS if f.h >= 1900])
 
 FREE = HALL.difference(FIX_KEEP)
 
 # ------------------------------------------------- equipment on the stations
 # (key, label, u0, v0, u1, v1, height, colour role)
 EQUIP = [
-    # workshop, outside
-    ("bench", "Work bench 3000 x 600",     -3348, -198, -348, 402, 900, "eq"),
-    ("vice",  "Bench vice",                -1500, -50, -1200, 250, 1150, "eq"),
-    ("drill", "Pillar drill",              -3398, 1000, -2798, 1600, 1800, "eq"),
-    ("grind", "Bench grinder on stand",    -3398, 1800, -2948, 2250, 1200, "eq"),
-    ("weld",  "Welder and trolley",        -3398, 2450, -2748, 2950, 1050, "eq"),
-    ("comp",  "Compressor",                -3398, 3150, -2848, 3700, 950, "eq"),
-    ("rack",  "Tool board and parts rack", -3398, 3900, -3098, 4698, 2000, "eq"),
+    # Nothing free-standing is left: the shop bench, the shop equipment, the
+    # fridges and the crate stacks are all in FACILITIES above, and the two
+    # HGF bikes and HG3 are vehicles, not fittings.
 ]
 
 
@@ -168,21 +166,23 @@ class Flagship:
 
 # ------------------------------------------------------- the farm vehicle
 class Farm:
-    """Zusha cargo-trike v1, the farm vehicle. Read from the block instance
-    placed in Warehouse Design.3dm on 2 Sep 2026: 4373 x 1813 x 1953 overall.
-    Same chassis as the Flagship - 2650 wheelbase, 960 rear track - so it
-    turns the same. Open flatbed: no doors, nothing to swing."""
-    LENGTH = 4373.0
-    WIDTH = 1813.0
-    HEIGHT = 1953.0
+    """HG3, the cargo vehicle. Measured from the 237 chassis parts placed in
+    Warehouse Design V2.3dm, 9 Sep 2026: 4207 long, 1549 wide, 1513 tall.
+
+    The Flagship is this same chassis with a market module, a canopy and two
+    doors on top of it - every Flagship in the model carries these very parts.
+    HG3 is the chassis on its own, so it turns identically and stops 1015 mm
+    below a Flagship's roof."""
+    LENGTH = 4207.2
+    WIDTH = 1548.8
+    HEIGHT = 1512.5
     WHEELBASE = 2650.0
     X_TRACK = 480.0
     STEER_MAX = math.radians(40.0)
 
-    # rear-axle frame, matching the Flagship convention
-    Y_NOSE = 2650.0 + 440.0            # front axle plus the front tyre radius
-    Y_TAIL = Y_NOSE - LENGTH           # -1283
-    X_HALF = WIDTH / 2.0               # 906.5
+    Y_NOSE = 2930.0                    # front of the front tyre
+    Y_TAIL = Y_NOSE - LENGTH           # -1277.2
+    X_HALF = WIDTH / 2.0               # 774.4
     Z_TOP = HEIGHT
 
     @classmethod
@@ -195,7 +195,59 @@ class Farm:
 
     @classmethod
     def poly_canopy(cls):
+        """HG3 tops out at 1513, well under the 2222 mm canopy band, so it
+        occupies nothing up there and a Flagship roof may overhang it."""
+        return Polygon()
+
+    @classmethod
+    def poly_module(cls):
         return cls.poly_body()
+
+    @classmethod
+    def poly_door(cls, side):
+        return Polygon()
+
+
+# ------------------------------------------------------------------- HGF
+class Bike:
+    """HGF, the Honda CG125 with its rear box. Two of them stand in the
+    north-west corner in both models. Measured from the placed geometry:
+    2055 long, 650 wide, 1404 tall, 1341 mm wheelbase.
+
+    A bike steers far harder than a trike, so it gets its own lock."""
+    LENGTH = 2054.1
+    WIDTH = 487.2               # frame, box and panniers, below the bars
+    BARS = 650.9                # across the handlebars, at 1051 mm up
+    BARS_Y = 857.9              # where the bars sit, ahead of the rear axle
+    HEIGHT = 1403.6
+    WHEELBASE = 1341.2
+    X_TRACK = 0.0
+    STEER_MAX = math.radians(45.0)
+
+    Y_NOSE = 1651.1
+    Y_TAIL = -403.1
+    X_HALF = WIDTH / 2.0        # 243.6
+    BAR_HALF = BARS / 2.0       # 325.5
+    Z_TOP = HEIGHT
+
+    @classmethod
+    def poly_bars(cls):
+        """The handlebars, the widest thing on the bike. Kept apart from the
+        body because a rider turns them to get out of a tight stand."""
+        return box(-cls.BAR_HALF, cls.BARS_Y - 120.0,
+                   cls.BAR_HALF, cls.BARS_Y + 120.0)
+
+    @classmethod
+    def poly_body(cls):
+        return box(-cls.X_HALF, cls.Y_TAIL, cls.X_HALF, cls.Y_NOSE)
+
+    @classmethod
+    def poly_hull(cls):
+        return cls.poly_body()
+
+    @classmethod
+    def poly_canopy(cls):
+        return Polygon()
 
     @classmethod
     def poly_module(cls):
@@ -218,8 +270,8 @@ class Veh:
         self.label = label or name
         self.note = note
         self.kind = kind
-        self.cls = Farm if kind == "farm" else Flagship
-        self.doors_required = doors_required and kind != "farm"
+        self.cls = {"farm": Farm, "bike": Bike}.get(kind, Flagship)
+        self.doors_required = doors_required and kind == "flagship"
 
     @classmethod
     def from_module_centre(cls, name, mu, mv, hdg, **kw):
@@ -247,6 +299,20 @@ class Veh:
 
     def envelope(self):
         return unary_union([self.body(), self.doors_poly()])
+
+    def stand_poly(self, pad=110.0):
+        c = self.cls
+        if self.kind == "flagship":
+            b = box(-c.X_ROOF - pad, c.Y_ROOF_R - pad,
+                    c.X_ROOF + pad, c.Y_NOSE + pad)
+        else:
+            b = box(-c.X_HALF - pad, c.Y_TAIL - pad,
+                    c.X_HALF + pad, c.Y_NOSE + pad)
+        return self._p(b)
+
+    def centre(self):
+        """Middle of the body, for a label."""
+        return self.body().centroid.coords[0]
 
     def nose(self):
         a = math.radians(self.hdg)
@@ -285,6 +351,12 @@ def check(vehicles, verbose=True, hall=HALL):
         # strip without taking it away, so it is reported separately.
         m = v.module()
         for f in FACILITIES:
+            if f.zone:
+                ov = b.intersection(f.poly)
+                if not ov.is_empty:
+                    issues.append(f"NOTE {v.label}: stands over "
+                                  f"{ov.area/1e6:.1f} m2 of {f.name}")
+                continue
             if b.intersects(f.poly):
                 issues.append(f"FAIL {v.label}: body fouls {f.name}")
                 continue
@@ -311,6 +383,17 @@ def check(vehicles, verbose=True, hall=HALL):
             elif min(dc, dh) < GAP_VEH:
                 issues.append(f"WARN {a.label}/{b.label}: {min(dc,dh):.0f} mm "
                               f"apart (canopy {dc:.0f}, hull {dh:.0f})")
+
+    bikes = [v for v in vehicles if v.kind == "bike"]
+    for i, a in enumerate(bikes):
+        for b in bikes[i + 1:]:
+            ba, bb = a._p(Bike.poly_bars()), b._p(Bike.poly_bars())
+            if ba.intersects(bb):
+                w = 2 * Bike.BAR_HALF
+                d = math.dist((a.u, a.v), (b.u, b.v))
+                issues.append(f"FAIL {a.label}/{b.label}: handlebars overlap by "
+                              f"{w - d:.0f} mm - {w:.0f} mm across the bars on "
+                              f"{d:.0f} mm centres")
 
     for i, a in enumerate(vehicles):
         da = a.doors_poly()

@@ -15,19 +15,22 @@ from PIL import Image, ImageDraw
 from shapely.geometry import Polygon, box
 from shapely.ops import unary_union
 from shapely import affinity
-from wh2 import (Flagship as F, Veh, HALL, FACILITIES, EQUIP, GATE, WALL_T,
-                 WORKSHOP)
+from wh2 import (Flagship as F, Farm as Z, Bike as B, Veh, HALL, FACILITIES,
+                 EQUIP, GATE, WALL_T)
 
 CELL = 50.0
 U0, V0 = -13000.0, -2500.0
 NU, NV = 800, 260
 
 R_MIN = F.WHEELBASE / math.tan(F.STEER_MAX)          # 3158 mm
+RMIN = {"flagship": R_MIN,
+        "farm": Z.WHEELBASE / math.tan(Z.STEER_MAX),
+        "bike": B.WHEELBASE / math.tan(B.STEER_MAX)}
 HBINS = 180                                          # 2 degrees
 STEP = 600.0
 
 # ------------------------------------------------------------- drivable area
-APRON = box(-12000.0, -2500.0, -WALL_T, 9500.0)      # open yard, west
+APRON = box(-22000.0, -2500.0, -WALL_T, 9500.0)      # open yard, west
 DOORWAY = box(-WALL_T, GATE[0], 0.0, GATE[1])
 DRIVE = unary_union([HALL, APRON, DOORWAY])
 OUTSIDE = box(U0, V0, U0 + NU * CELL, V0 + NV * CELL).difference(DRIVE)
@@ -35,9 +38,9 @@ OUTSIDE = box(U0, V0, U0 + NU * CELL, V0 + NV * CELL).difference(DRIVE)
 
 def _solid(hmin):
     """Everything standing at least hmin tall that a vehicle must go round."""
-    ps = [OUTSIDE, WORKSHOP]
+    ps = [OUTSIDE]
     for f in FACILITIES:
-        if f.h >= hmin and f.key != "weigh":
+        if (not f.zone) and f.h >= hmin:
             ps.append(f.poly)
     for k, n, a, b, c, d, h, r in EQUIP:
         if h >= hmin and r != "hole":
@@ -54,9 +57,9 @@ LAYERS = ("canopy", "module", "low")
 
 
 def veh_layers(v):
-    if getattr(v, "kind", "flagship") == "farm":
+    if getattr(v, "kind", "flagship") in ("farm", "bike"):
         b = v.body()
-        return dict(canopy=b, module=b, low=b, door=v.doors_poly())
+        return dict(canopy=Polygon(), module=b, low=b, door=Polygon())
     return dict(canopy=v.canopy(), module=v.module(),
                 low=box(-F.X_FORK, F.Y_BOX_F, F.X_FORK, F.Y_NOSE)
                 and affinity.translate(
@@ -86,15 +89,17 @@ STATIC = {"canopy": _cells(_solid(2222.0)),
           "low":    _cells(_solid(100.0))}
 
 # ------------------------------------------------------------ the footprints
-INFLATE = 75.0          # driving margin, on top of the 50 mm grid
-_LOCAL = {k: g.buffer(INFLATE, join_style=2) for k, g in
-          {"canopy": F.poly_canopy(), "module": F.poly_module(),
-           "low": box(-F.X_FORK, F.Y_BOX_F, F.X_FORK, F.Y_NOSE)}.items()}
-_FOOT = {}
-for name, poly in _LOCAL.items():
+INFLATE = 75.0          # driving margin for a trike, on top of the 50 mm grid
+MARGIN = {"flagship": 75.0, "farm": 75.0, "bike": 15.0}   # a bike is placed
+#   far more finely than a trike, and can be walked the last metre
+def _table(poly, inflate=INFLATE):
+    """The cells a footprint covers, for every heading bin."""
+    if poly.is_empty:
+        return [(np.zeros(0, dtype=np.int64), 0, 0, 0, 0) for _ in range(HBINS)]
+    p0 = poly.buffer(inflate, join_style=2)
     fs = []
     for b in range(HBINS):
-        p = affinity.rotate(poly, b * 360.0 / HBINS, origin=(0, 0))
+        p = affinity.rotate(p0, b * 360.0 / HBINS, origin=(0, 0))
         x0, y0, x1, y1 = p.bounds
         ii, jj = np.meshgrid(
             np.arange(int(math.floor(x0 / CELL)), int(math.ceil(x1 / CELL)) + 1),
@@ -102,9 +107,25 @@ for name, poly in _LOCAL.items():
             indexing="ij")
         m = shapely.contains_xy(p, ii * CELL, jj * CELL)
         di, dj = ii[m].astype(np.int64), jj[m].astype(np.int64)
-        fs.append((di * NV + dj, int(di.min()), int(di.max()),
-                   int(dj.min()), int(dj.max())))
-    _FOOT[name] = fs
+        if len(di) == 0:
+            fs.append((np.zeros(0, dtype=np.int64), 0, 0, 0, 0))
+        else:
+            fs.append((di * NV + dj, int(di.min()), int(di.max()),
+                       int(dj.min()), int(dj.max())))
+    return fs
+
+
+def _shape(cls, kind):
+    if kind == "flagship":
+        return {"canopy": cls.poly_canopy(), "module": cls.poly_module(),
+                "low": box(-cls.X_FORK, cls.Y_BOX_F, cls.X_FORK, cls.Y_NOSE)}
+    b = cls.poly_body()
+    return {"canopy": Polygon(), "module": b, "low": b}
+
+
+_FOOT = {kind: {k: _table(p, MARGIN[kind])
+                for k, p in _shape(cls, kind).items()}
+         for kind, cls in (("flagship", F), ("farm", Z), ("bike", B))}
 
 
 def hbin(h):
@@ -130,12 +151,14 @@ class Field:
             "low":    unary_union([P["module"], P["low"]])}
         self.m = {k: (STATIC[k] | _cells(block[k])).ravel() for k in LAYERS}
 
-    def hits(self, u, v, h):
+    def hits(self, u, v, h, kind="flagship"):
         b = hbin(h)
         i = int(round((u - U0) / CELL))
         j = int(round((v - V0) / CELL))
         for k in LAYERS:
-            off, i0, i1, j0, j1 = _FOOT[k][b]
+            off, i0, i1, j0, j1 = _FOOT[kind][k][b]
+            if len(off) == 0:
+                continue
             if i + i0 < 0 or j + j0 < 0 or i + i1 >= NU or j + j1 >= NV:
                 return True
             if self.m[k][i * NV + j + off].any():
@@ -161,8 +184,10 @@ KS = [0.0, 1.0 / R_MIN, -1.0 / R_MIN, 0.5 / R_MIN, -0.5 / R_MIN]
 
 
 def plan(start, field, goal_u=-1400.0, goal_v=None, goal_h=90.0,
-         gu=350.0, gh=10.0, cap=200000):
+         gu=350.0, gh=10.0, cap=200000, kind="flagship"):
     goal_v = goal_v if goal_v is not None else (GATE[0] + GATE[1]) / 2
+    r = RMIN[kind]
+    ks = [0.0, 1.0 / r, -1.0 / r, 0.5 / r, -0.5 / r]
 
     def key(p):
         return (int(round(p[0] / gu)), int(round(p[1] / gu)),
@@ -189,18 +214,18 @@ def plan(start, field, goal_u=-1400.0, goal_v=None, goal_h=90.0,
                 out.append(cur[1])
                 cur = came.get(cur[0])
             return list(reversed(out)), n
-        for k in KS:
+        for k in ks:
             for d in (1, -1):
                 q, ok = p, True
                 for t in range(3):
                     q = step(q, k, d, STEP / 3.0)
-                    if field.hits(*q):
+                    if field.hits(q[0], q[1], q[2], kind):
                         ok = False
                         break
                 if not ok:
                     continue
                 c = (g + STEP * (1.0 if d > 0 else 1.7)
-                     + (450.0 if d != d0 else 0.0) + 220.0 * abs(k) * R_MIN)
+                     + (450.0 if d != d0 else 0.0) + 220.0 * abs(k) * r)
                 kk = (key(q), d)
                 if c < best.get(kk, 1e18) - 1.0:
                     best[kk] = c

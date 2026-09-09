@@ -21,13 +21,17 @@ CACHE = "out/scenarios.pkl"
 
 # the morning: HG3 clears the gate, the north rank comes out deepest last,
 # then the diagonal from the west
-CLOSING_ORDER = ["HG3", "N4", "N3", "N2", "N1", "D1", "D2", "D3", "D4"]
-OPENING_ORDER = ["D1", "D2", "D3", "D4", "N1"]
+CLOSING_ORDER = ["HGF1", "HGF2", "HG3", "N4", "N3", "N2", "N1",
+                 "D1", "D2", "D3", "D4"]
+OPENING_ORDER = ["HGF1", "HGF2", "D1", "D2", "D3", "D4", "N1"]
 
 
 def shut(vs):
     return [Veh(v.name, v.u, v.v, v.hdg, doors=(), label=v.label, kind=v.kind,
                 doors_required=False, note=v.note) for v in vs]
+
+
+FLEET = {"flagship": "Flagship", "farm": "HG3", "bike": "HGF"}
 
 
 def doors_in_the_way(v, path, others):
@@ -119,19 +123,26 @@ if __name__ == "__main__":
 def labels(s, r):
     """The short strings the sheet and the viewer both show."""
     ins = S.inside_of(s)
+    n_flag = len([v for v in ins if v.kind == "flagship"])
+    n_bike = len([v for v in ins if v.kind == "bike"])
     n_farm = len([v for v in ins if v.kind == "farm"])
     n_out = len(s["vehicles"]) - len(ins)
+    other = ("HG3 and two HGF bikes" if n_farm else "two HGF bikes")
     if s["key"] == "open":
         clear = "600 mm, all of it"
-        doors = "both, the five inside"
-        order = "yes, all five"
+        doors = "both, the five Flagships"
+        order = "yes, all seven"
+        outside = "HG3 and three Flagships"
     else:
         clear = "593 mm at the crates"
-        doors = "both, all eight"
+        doors = "both, all eight Flagships"
         order = "no, a fixed order"
+        outside = "none"
     return dict(doors_label=doors, clear_label=clear, order_label=order,
-                inside_label=f"{len(ins) - n_farm}"
-                             + (" + HG3" if n_farm else ""),
-                outside_label=str(n_out) if n_out else "none",
+                inside_label=str(n_flag), other_label=other,
+                outside_label=outside,
+                tab_label=(f"{n_flag} Flagships, {n_bike} HGF"
+                           + (", HG3" if n_farm else "")
+                           + (f", {n_out} out" if n_out else "")),
                 tight_label=f"{r['tight']:.0f} mm",
                 anyorder=(s["key"] == "open"))

@@ -1,4 +1,4 @@
-<title>WH2 Parking — Opening and Closing</title>
+<title>WH2 Parking, Opening and Closing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
@@ -131,7 +131,7 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
 
 <header>
   <div class="brand"><b><span class="long">Honeyguide </span>WH2</b>
-    <span>v0.6.0 &middot; two scenarios &middot; Warehouse Design V2 and V3, 9 September</span></div>
+    <span>v0.7.0 &middot; two scenarios &middot; Warehouse Design V2 and V3, 9 September</span></div>
   <nav id="tabs" aria-label="Scenario"></nav>
   <div class="spacer"></div>
   <button class="themebtn" id="theme" title="Switch theme" aria-label="Switch theme">◐</button>
@@ -184,11 +184,15 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script id="scene-data" type="application/json">__SCENE__</script>
 <script id="mesh-data" type="application/json">__MESH__</script>
+<script id="mesh-hg3" type="application/json">__MESH_HG3__</script>
+<script id="mesh-hgf" type="application/json">__MESH_HGF__</script>
 <script>
 (function(){
 "use strict";
 var D = JSON.parse(document.getElementById('scene-data').textContent);
 var MESH = JSON.parse(document.getElementById('mesh-data').textContent);
+var MESH_HG3 = JSON.parse(document.getElementById('mesh-hg3').textContent);
+var MESH_HGF = JSON.parse(document.getElementById('mesh-hgf').textContent);
 var V = D.vehicle, M = 0.001, TAU = Math.PI * 2;
 
 var canvas = document.getElementById('gl');
@@ -408,38 +412,27 @@ var panels = [];
       steel.add(col); });
   }
   wallGroup.add(steel);
-  // outside apron and the covered workshop
+  // the yard outside the gate. There is no workshop any more: the shop is
+  // the bench run attached to the office's east face, inside the hall.
   var ap = new THREE.Mesh(new THREE.PlaneGeometry(28,22), MAT.apron);
   ap.rotation.x = -Math.PI/2; ap.position.set(-11.2, -0.006, -4.0);
   ap.receiveShadow = true; world.add(ap);
-  var w = D.workshop, wb = w.b;
-  world.add(bx(wb, -0.15, 0.15, MAT.apron));
-  var roof = bx(wb, w.h*M, (w.roof-w.h)*M, MAT.wall);
-  wallGroup.add(roof);
-  panels.push({m:roof, n:new THREE.Vector3(0,0,0),
-               p:new THREE.Vector3(0,0,0), roof:true});
-  [[wb[0],wb[1]],[wb[0],wb[3]],[wb[2],wb[1]],[wb[2],wb[3]]].forEach(function(c){
-    var p = new THREE.Mesh(new THREE.BoxGeometry(0.09, w.h*M, 0.09), MAT.steel);
-    p.position.set(c[0]*M, w.h*M/2, -c[1]*M); p.castShadow = true; world.add(p); });
-  world.add(bx([wb[0]-100, wb[1], wb[0], wb[3]], 0, w.h*M, MAT.wall));
-  world.add(bx([wb[0], wb[1]-100, wb[2], wb[1]], 0, w.h*M, MAT.wall));
 })();
 
 function cullWalls(){
   if(!wallGroup.visible) return;
   var c = camera.position;
   panels.forEach(function(w){
-    w.m.visible = w.roof ? (c.y < 6.5)
-      : (((c.x-w.p.x)*w.n.x + (c.z-w.p.z)*w.n.z) < 1.2); });
+    w.m.visible = (((c.x-w.p.x)*w.n.x + (c.z-w.p.z)*w.n.z) < 1.2); });
 }
 
 /* -------------------------------------------------------------- fittings */
 var fitGroup = new THREE.Group(); world.add(fitGroup);
 D.facilities.forEach(function(f){
+  if(f.h <= 0){ fitGroup.add(bx(f.b, 0.002, 0.004, MAT.zone)); return; }
   var mat = (f.key === 'office') ? MAT.office
           : (f.key === 'crates') ? MAT.rack
-          : (f.key === 'checkin' || f.key === 'shop' || f.key === 'shoprig')
-            ? MAT.eq : MAT.cold;
+          : (f.key === 'shop' || f.key === 'shoprig') ? MAT.eq : MAT.cold;
   fitGroup.add(bx(f.b, 0, f.h*M, mat));
 });
 D.equip.forEach(function(e){
@@ -481,11 +474,15 @@ function decode(g, lo, rng){
 }
 var GEO = {};
 Object.keys(MESH.g).forEach(function(k){ GEO[k] = decode(MESH.g[k], MESH.lo, MESH.rng); });
+var GEO_HG3 = decode(MESH_HG3.g.body, MESH_HG3.lo, MESH_HG3.rng);
+var GEO_HGF = decode(MESH_HGF.g.body, MESH_HGF.lo, MESH_HGF.rng);
 
 var VMAT = new THREE.MeshStandardMaterial({color:0xe8e3d6, roughness:0.58,
   metalness:0.08, side:THREE.DoubleSide, flatShading:false});
 var DMAT = new THREE.MeshStandardMaterial({color:0xd8a12c, roughness:0.5,
   metalness:0.12, side:THREE.DoubleSide});
+var BMAT = new THREE.MeshStandardMaterial({color:0x9aa3ad, roughness:0.5,
+  metalness:0.25, side:THREE.DoubleSide});
 
 var HINGE_X = 0.720, HINGE_Y = 2.300, SWING = 1.306;   // radians, open to shut
 
@@ -507,18 +504,19 @@ function buildFlagship(){
   return g;
 }
 function buildFarm(){
-  /* the Zusha cargo trike: an open flatbed, no doors. Drawn as its real
-     envelope rather than a detailed mesh, because we have no mesh for it. */
-  var f = D.farm, g = new THREE.Group();
-  var L = (f.Y_NOSE - f.Y_TAIL) / 1000, W = 2 * f.X_HALF / 1000;
-  var deck = new THREE.Mesh(new THREE.BoxGeometry(W, 0.75, L * 0.62), VMAT);
-  deck.position.set(0, 0.75, (f.Y_TAIL / 1000) + L * 0.31 + 0.15);
-  var cab = new THREE.Mesh(new THREE.BoxGeometry(W * 0.55, 1.20, L * 0.30), VMAT);
-  cab.position.set(0, 0.75, (f.Y_NOSE / 1000) - L * 0.18);
-  [deck, cab].forEach(function(m){ m.castShadow = true; m.receiveShadow = true;
-    /* mesh local (lx,ly,lz) -> three (lx, lz, -ly): build in three space */
-    g.add(m); });
-  deck.position.z = -deck.position.z; cab.position.z = -cab.position.z;
+  /* HG3, the cargo vehicle: the Zusha chassis, 237 parts read out of the
+     model and welded down to something a browser can carry. No doors. */
+  var g = new THREE.Group();
+  var b = new THREE.Mesh(GEO_HG3, VMAT);
+  b.castShadow = true; b.receiveShadow = true; g.add(b);
+  g.userData.doors = {};
+  return g;
+}
+function buildBike(){
+  /* HGF, the CG125 with its rear box, from the model's own geometry. */
+  var g = new THREE.Group();
+  var b = new THREE.Mesh(GEO_HGF, BMAT);
+  b.castShadow = true; b.receiveShadow = true; g.add(b);
   g.userData.doors = {};
   return g;
 }
@@ -540,7 +538,8 @@ function loadScheme(key){
   fleet = [];
   buildFloor(current.marks);
   current.vehicles.forEach(function(v){
-    var node = (v.kind === 'farm') ? buildFarm() : buildFlagship();
+    var node = (v.kind === 'farm') ? buildFarm()
+             : (v.kind === 'bike') ? buildBike() : buildFlagship();
     place(node, v.u, v.v, v.hdg);
     world.add(node);
     fleet.push({node:node, spec:v, path:current.paths[v.name] || null});
@@ -648,7 +647,7 @@ var anim = null, lastView = null;
 function goTo(v, snap){
   lastView = v;
   var q = viewOf(v); if(!q) return;
-  if(snap){ ctl.target.set(q.t[0],q.t[1],q.t[2]); ctl.dist=q.d;
+  if(snap){ anim = null; ctl.target.set(q.t[0],q.t[1],q.t[2]); ctl.dist=q.d;
             ctl.az=q.az; ctl.el=q.el; updateCam(); return; }
   anim = {from:{t:ctl.target.clone(), d:ctl.dist, az:ctl.az, el:ctl.el}, to:q, u:0};
 }
@@ -670,7 +669,7 @@ function renderTabs(){
   D.schemes.forEach(function(s){
     var b = document.createElement('button');
     b.innerHTML = '<b>' + s.name.replace(/ - /, ' \u00b7 ') + '</b><small>' +
-      s.inside_label + ' inside' + (s.outside ? ', ' + s.outside + ' in the runway' : '') + '</small>';
+      s.tab_label + '</small>';
     b.setAttribute('data-key', s.key);
     b.addEventListener('click', function(){ select(s.key); });
     nav.appendChild(b); });
@@ -687,6 +686,7 @@ function renderRail(){
   document.getElementById('s-name').textContent = s.name.split(' - ')[1];
   document.getElementById('s-tag').textContent = s.tag;
   var facts = [['Flagships inside', s.inside_label, true],
+    ['Also inside', s.other_label],
     ['Waiting in the runway', s.outside_label],
     ['Doors open in place', s.doors_label],
     ['Working clearance', s.clear_label],
