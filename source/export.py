@@ -7,7 +7,7 @@ from shapely.geometry import box
 from shapely.ops import unary_union
 from shapely import affinity
 from wh2 import (Flagship as F, HALL, WORKSHOP, WORKSHOP_H, WORKSHOP_ROOF,
-                 FACILITIES, EQUIP, GATE, east_wall_u, WALL_T, HALL_H)
+                 FACILITIES, FAC, EQUIP, GATE, east_wall_u, WALL_T, HALL_H)
 import schemes as S
 import plan as P
 
@@ -35,6 +35,8 @@ def marks(s):
     H(box(GATE[0], 0, GATE[1], 900))
     H(box(150, 8100, 1350, 8970), "fire")
     T(750, 7860, "FIRE", 380, 0, "#C8102E")
+    H(box(3900, 8200, 5100, 9070), "fire")
+    T(4500, 7940, "FIRE", 380, 0, "#C8102E")
     H(box(17500, 150, 18700, 1010), "fire")
     for f in FACILITIES:
         w = f.clearance()
@@ -43,10 +45,10 @@ def marks(s):
             for g in gs:
                 x0, y0, x1, y1 = g.bounds
                 R(x0, y0, x1, y1, C["green"], 75)
-    R(*FACILITIES[-1].poly.bounds, C["blue"], 110)
-    T(8100, 8880, "WEIGHING AND LOADING", 420, 0, C["blue"])
+    R(*FAC["checkin"].poly.bounds, C["blue"], 110)
+    T(2220, 7560, "CHECK-IN / CHECK-OUT", 400, 0, C["blue"])
     for v in s["vehicles"]:
-        if v.name.startswith("W"):
+        if v.u < 0:
             continue
         pad = 110.0
         bay = box(-F.X_ROOF - pad, F.Y_ROOF_R - pad, F.X_ROOF + pad,
@@ -67,15 +69,14 @@ def marks(s):
           nu - ux * 350, nv - uy * 350, C["yellow"], 95)
         T(v.u - ux * (F.Y_BOX_R + 250), v.v - uy * (F.Y_BOX_R + 250),
           v.label, 850, -v.hdg)
-    if s["key"] in ("diag", "waves"):
-        L(9000, 3900, 23500, 3900, C["yellow"], 100)
-    if s["key"] in ("streets", "both"):
-        L(8000, 3663, 24000, 3663, C["yellow"], 100)
-        L(8000, 4611, 24000, 4611, C["yellow"], 100)
+    L(8600, 5100, 24000, 5100, C["yellow"], 100)
     return m
 
 
 def build():
+    from wh2 import Farm as Z
+    import scenarios as SC
+    R = SC.solve_all()
     d = dict(
         hall=[list(c) for c in HALL.exterior.coords],
         wall=WALL_T, hall_h=HALL_H,
@@ -85,7 +86,7 @@ def build():
                     for f in FACILITIES],
         equip=[dict(key=k, name=n, b=[a, b, c, dd], h=h, role=r)
                for k, n, a, b, c, dd, h, r in EQUIP],
-        farm={k: getattr(__import__("wh2").Farm, k) for k in
+        farm={k: getattr(Z, k) for k in
               ("LENGTH", "WIDTH", "HEIGHT", "Y_NOSE", "Y_TAIL", "X_HALF")},
         vehicle={k: getattr(F, k) for k in
                  ("Y_NOSE", "Y_FRONT_AXLE", "Y_ROOF_F", "Y_BOX_F", "Y_DOOR_F",
@@ -94,65 +95,35 @@ def build():
                   "Z_ROOF_LO", "Z_ROOF_HI", "Z_BOX_TOP", "LENGTH",
                   "WIDTH_CLOSED", "WIDTH_OPEN", "DOOR_LEN")},
         schemes=[])
-    import sequence as Q
-    from independent import free_to_leave
-    for f in S.SCHEMES:
+    for f in S.SCENARIOS:
         s = f()
         s.update(P.META[s["key"]])
-        inside = [v for v in s["vehicles"] if not v.name.startswith("W")]
-        if s["key"] == "drawn":
-            from wh2 import Veh
-            inside = [v for v in s["vehicles"] if v.u > 0]
-            shut = [Veh(v.name, v.u, v.v, v.hdg, doors=(), label=v.label,
-                        kind=v.kind, doors_required=False)
-                    for v in inside if v.name != "Z1"]
-            nfree, bad, paths = free_to_leave(shut)
-            ex = [v.name for v in shut]
-            s = dict(s); s["vehicles"] = shut
-        elif s["key"] in ("diag", "waves"):
-            from independent import free_to_leave
-            nfree, bad, paths = free_to_leave(inside)
-            if bad:
-                raise SystemExit(f"{s['name']}: stuck {bad}")
-            ex = [v.name for v in inside]
-        else:
-            ex, paths, bad = Q.solve(s, verbose=False)
-            if ex is None:
-                raise SystemExit(f"{s['name']}: no exit for {bad}")
-        order = list(reversed(ex))          # arrival is the exit run backwards
-        import audit_paths as AU
-        bad, tight = AU.audit(s, ex, paths, verbose=False)
-        if bad and s["key"] != "drawn":
-            raise SystemExit("\n".join(bad))
-        if s["key"] == "drawn":
-            s = f()
-            s.update(P.META[s["key"]])
-            inside = [v for v in s["vehicles"] if v.u > 0]
+        r = R[s["key"]]
+        s.update(SC.labels(s, r))
+        ins = S.inside_of(s)
+        by = {v.name: v for v in ins}
+        ex = r["order"]
+        needs = {nm: [[o, sd, SC.side_name(by[o], sd)] for o, sd in v]
+                 for nm, v in r["needs"].items()}
         d["schemes"].append(dict(
             key=s["key"], name=s["name"], tag=s["tag"],
             notes=s["notes"], sequence=s["sequence"],
-            inside=len(inside), aisle=round(s["aisle"]),
-            tight=int(round(tight)),
-            lane_name=("Walkway between the rows" if s["key"] in ("streets", "both")
-                       else "Drive aisle"),
-            anyorder=s["key"] in ("diag", "waves"),
-            asdrawn=s["key"] == "drawn",
-            inside_label=("5 + 1 farm" if s["key"] == "drawn"
-                          else str(len(inside))),
-            doors_label=("both, the five inside" if s["key"] == "drawn"
-                         else "both, every vehicle"
-                         if all(len(v.doors) == 2 for v in inside)
-                         else "one, every vehicle"),
-            order_label=("blocked at the gate" if s["key"] == "drawn"
-                         else "yes" if s["key"] in ("diag", "waves")
-                         else "no, fixed order"),
-            tight_label=("see notes" if s["key"] == "drawn"
-                         else f"{int(round(tight))} mm"),
+            inside=len(ins), outside=len(s["vehicles"]) - len(ins),
+            aisle=round(s["aisle"]),
+            tight=int(round(r["tight"])),
+            anyorder=s["anyorder"],
+            inside_label=s["inside_label"],
+            outside_label=s["outside_label"],
+            doors_label=s["doors_label"],
+            order_label=s["order_label"],
+            clear_label=s["clear_label"],
+            tight_label=s["tight_label"],
+            needs=needs,
             vehicles=[v.as_dict() for v in s["vehicles"]],
-            order=order,
+            order=list(reversed(ex)),
             exit_order=ex,
-            paths={k: [(round(a, 1), round(b, 1), round(c, 2)) for a, b, c in p]
-                   for k, p in paths.items()},
+            paths={k: [(round(a, 1), round(b, 1), round(c, 2)) for a, b, c in p_]
+                   for k, p_ in r["paths"].items()},
             marks=marks(s)))
     return d
 

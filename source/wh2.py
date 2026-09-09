@@ -50,15 +50,25 @@ class Fac:
         return unary_union(out) if out else Polygon()
 
 
+# Read from Warehouse Design V2.3dm / V3.3dm (9 Sep 2026). The two models
+# carry an identical set of fittings; only the vehicles differ between them.
+#   * the shop now stands where the fridges used to, against the office's
+#     east face on the south wall
+#   * all three fridges have moved to the north wall, east of check-in
+#   * the crate stacks have moved to the north-east corner
+#   * the wash area has gone from the south wall
+#   * check-in / check-out sits in the north-west corner, by the gate
 FACILITIES = [
-    Fac("office",  "Office",              box(0, 0, 7360, 3560),          2640, "NE"),
-    Fac("fridge1", "Fridge 1",            box(7410, 50, 9360, 880),        860, "N"),
-    Fac("fridge2", "Fridge 2",            box(9380, 50, 11330, 880),       860, "N"),
-    Fac("fridge3", "Fridge 3",            box(7410, 1480, 8220, 3260),     860, "E"),
-    Fac("wash",    "Wash area, sinks",    box(11653.5, 50, 13130.2, 880),  900, "N"),
-    Fac("crates",  "Food storage crates", box(13263.2, 0, 16670, 960),    1860, "N"),
-    Fac("weigh",   "Weighing and loading", box(5900, 7320, 10300, 9120),     0, "S"),
+    Fac("office",  "Office",               box(0, 0, 7360, 3560),           2640, "NE"),
+    Fac("shop",    "Shop bench",           box(7299.1, 0, 7969.6, 2438.4),   900, "NE"),
+    Fac("shoprig", "Shop equipment",       box(8006.1, 110.9, 8640.5, 754.8), 1265, "NE"),
+    Fac("checkin", "Check-in / check-out", box(1190.9, 7816.1, 3250.1, 9039.9), 1408, "SE"),
+    Fac("fridge1", "Fridge 1",             box(8878.1, 8260.0, 10658.1, 9070.0), 860, "S"),
+    Fac("fridge2", "Fridge 2",             box(10701.7, 8240.0, 12651.7, 9070.0), 860, "S"),
+    Fac("fridge3", "Fridge 3",             box(12689.7, 8240.0, 14639.7, 9070.0), 860, "S"),
+    Fac("crates",  "Food storage crates",  box(16985.3, 8110.0, 20392.1, 9120.0), 600, "S"),
 ]
+
 FAC = {f.key: f for f in FACILITIES}
 
 FIX_SOLID = unary_union([f.poly for f in FACILITIES])
@@ -73,16 +83,6 @@ FREE = HALL.difference(FIX_KEEP)
 # ------------------------------------------------- equipment on the stations
 # (key, label, u0, v0, u1, v1, height, colour role)
 EQUIP = [
-    # the two scales sit against the north wall, operator working from the
-    # south, so the south half of the weighing zone stays open as the lane
-    ("scale1", "Platform scale 900 x 900", 6500, 8170, 7400, 9070, 140, "eq"),
-    ("scale1p", "Indicator column",        7450, 8500, 7650, 8700, 1250, "eq"),
-    ("scale2", "Platform scale 900 x 900", 8800, 8170, 9700, 9070, 140, "eq"),
-    ("scale2p", "Indicator column",        9750, 8500, 9950, 8700, 1250, "eq"),
-    ("sink",  "Two bowl food grade sink",  11653.5, 50, 13130.2, 880, 900, "eq"),
-    ("bowl1", "Bowl",                      11803.5, 190, 12303.5, 740, 600, "hole"),
-    ("bowl2", "Bowl",                      12380.0, 190, 12880.0, 740, 600, "hole"),
-    ("splash", "Splashback",               11653.5, 50, 13130.2, 170, 1400, "eq"),
     # workshop, outside
     ("bench", "Work bench 3000 x 600",     -3348, -198, -348, 402, 900, "eq"),
     ("vice",  "Bench vice",                -1500, -50, -1200, 250, 1150, "eq"),
@@ -279,15 +279,25 @@ def check(vehicles, verbose=True, hall=HALL):
             issues.append(f"FAIL {v.label}: body outside the hall")
         elif not inner.contains(b):
             issues.append(f"WARN {v.label}: body {b.distance(hall.exterior):.0f} mm from a wall")
-        # body must respect every facility and its working strip
+        # body must respect every facility and its working strip. The strip is
+        # tested against the module - the part of the vehicle standing at the
+        # height a person works at. A canopy edge at 2222 mm overhangs the
+        # strip without taking it away, so it is reported separately.
+        m = v.module()
         for f in FACILITIES:
             if b.intersects(f.poly):
                 issues.append(f"FAIL {v.label}: body fouls {f.name}")
                 continue
             work = f.clearance()
-            if not work.is_empty and b.intersects(work.buffer(-1.0)):
-                issues.append(f"FAIL {v.label}: {b.distance(f.poly):.0f} mm to "
-                              f"{f.name}, needs {CLEAR_HUMAN:.0f}")
+            if work.is_empty:
+                continue
+            if m.intersects(work.buffer(-1.0)):
+                issues.append(f"FAIL {v.label}: {m.distance(f.poly):.0f} mm to "
+                              f"{f.name} at working height, needs {CLEAR_HUMAN:.0f}")
+            elif b.intersects(work.buffer(-1.0)):
+                issues.append(f"NOTE {v.label}: canopy overhangs the strip at "
+                              f"{f.name} ({b.distance(f.poly):.0f} mm at 2222 mm, "
+                              f"{m.distance(f.poly):.0f} mm at working height)")
         if not v.doors and getattr(v, "doors_required", True):
             issues.append(f"FAIL {v.label}: no door can be opened")
 
@@ -313,8 +323,15 @@ def check(vehicles, verbose=True, hall=HALL):
         for j, b in enumerate(vehicles):
             if i == j:
                 continue
-            if da.intersects(b.upper()):
-                issues.append(f"FAIL {a.label} door fouls {b.label}")
+            if da.intersects(b.module()):
+                issues.append(f"FAIL {a.label} door fouls the body of {b.label} "
+                              f"({da.intersection(b.module()).area/1e6:.2f} m2)")
+            elif da.intersects(b.canopy()):
+                ov = da.intersection(b.canopy()).area / 1e6
+                issues.append(f"FAIL {a.label} door sweeps {ov:.2f} m2 over the "
+                              f"canopy of {b.label}; the top "
+                              f"{Flagship.Z_DOOR_HI - Flagship.Z_ROOF_LO:.0f} mm "
+                              f"of the leaf is at canopy height")
             if j > i and da.intersects(b.doors_poly()):
                 issues.append(f"FAIL {a.label}/{b.label}: open doors clash")
 

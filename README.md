@@ -1,109 +1,66 @@
 # WH2 Tricycle Parking
 
-Parking layout study for the Honeyguide WH2 warehouse, Accra. Five schemes,
-each checked twice: that it fits, and that a driver can get every vehicle back
+Parking layout study for the Honeyguide WH2 warehouse, Accra. One simulation,
+two scenarios — Opening and Closing — read straight out of the Rhino models
+and checked twice: that they fit, and that a driver can get every vehicle back
 out through the gate.
 
 **Live: https://honeyguide-gh.github.io/honeyguide-wh2-parking/**
 
-Drag to orbit, right-drag to pan, scroll to zoom. **Play arrival** fills the
-building; **Play exit** empties it. Both run the real planned manoeuvres, not
-animations drawn by hand.
+Drag to orbit, right-drag to pan, scroll to zoom. Switch between **Scenario 1
+· Opening** and **Scenario 2 · Closing** in the header. **Play arrival** fills
+the building; **Play exit** empties it. Both run the real planned manoeuvres,
+not animations drawn by hand.
 
-## What the two operating constraints cost
+## The two scenarios
 
-The review asked for both doors open on every parked vehicle, so they can all
-load at once, and any vehicle in or out in any order, so the morning juggling
-stops. Both are achievable. Together they cost five vehicles.
-
-| Flagships inside the hall | Fixed order, as now | Any order, nobody moves |
+|  | Scenario 1, Opening | Scenario 2, Closing |
 |---|---|---|
-| **One door open** | **8** | 4 |
-| **Both doors open** | **6** | **3** |
+| Flagships inside | **5** | **8** |
+| HG3, the cargo vehicle | in the runway | inside, by the gate |
+| Waiting in the runway | 4 | none |
+| Both doors open | the five inside | all eight |
+| Any vehicle, any order | **yes, all five** | no, a fixed order |
+| Tightest point driving out | 60 mm | 60 mm |
 
-Any-order access is the expensive constraint, not both doors. Nose to tail,
-both doors open changes nothing at all: a door leaf is 1976 mm and the street
-pitch is 4170, so two leaves in a line never meet.
+Nine vehicles all day: eight Flagships and HG3. At night they are all inside.
+In the morning HG3 and three Flagships pull out to the runway so the five that
+stay can open both doors and load together, then leave in any order.
 
-## The schemes
+## The three tight points
 
-| | Scheme | Inside | Both doors | Any order | Tightest point driving out |
-|---|---|---|---|---|---|
-| 1 | Diagonal Three | 3 | yes | **yes** | 45 mm |
-| 2 | Two Streets, Both Doors | 6 | yes | no | 41 mm |
-| 3 | Two Streets, One Door | 8 | no | no | 41 mm |
-| 4 | Three In, Seven Out | 3 + 7 in the yard | yes | **yes** | 45 mm |
-| 5 | **As Drawn, 8 September** | 5 + the farm vehicle | no, they foul | blocked at the gate | see notes |
+**The diagonal's doors overlap by 21 mm — of height, not of plan.** At the
+3494 mm pitch each open door sweeps about 0.63 m² over the next vehicle's
+canopy, but the leaf itself clears by 55 mm; it is the door's upper arm,
+topping out at 2243 mm against a canopy underside of 2222 mm, that fouls.
+Nothing touches at body height. So either drop that arm 25 mm, or run the
+rule that D2 shuts its north door to let D1 out, D3 for D2, D4 for D3.
 
-Scheme 5 is the 8 September Rhino layout, read straight out of the model: every
-axle centre and heading comes from that vehicle's own three wheels. It holds five
-Flagships inside plus the farm vehicle, but it does not yet meet the two
-constraints. The farm vehicle blocks the gate by 71 mm, leaving 1957 mm where a
-Flagship needs 2028; move it about 300 mm south and all five inside drive out in
-any order. The diagonal row is 3494 mm where both doors open needs 4600 mm, so
-each door passes 0.63 m2 into the next vehicle's body. And three vehicles stand
-inside a 600 mm working strip.
+**HG3 stops 101 mm short of the check-in desk overnight.** Fine at night;
+move it 500 mm east if anyone works late.
 
-Scheme 1 is the review's constraints met exactly: three stands at 145° on a
-4450 mm pitch, both doors open on all three, any of them out at any time.
+**The north rank leaves 593 mm in front of the crate stacks**, seven short of
+the 600 mm working strip. The fridges are comfortable at 723 to 807 mm.
 
-**Why four inside is impossible rather than merely tight.** The stand band has
-14.9 m of usable length once the office, the third fridge and its working strip
-are subtracted, and the closest two both-doors-open vehicles can ever be, at
-any angle from 0° to 90°, is 3950 mm. Four stands need 15.8 m.
+## How the positions were read
 
-**The diagonal is the right instinct.** Two both-doors-open vehicles staggered
-3650 mm along their own axis sit only 2200 mm apart across, against 4300 mm
-side by side. That is the tightest packing available.
-
-## How the checks work
-
-The hall, the fittings and every parked vehicle are rasterised on a 50 mm grid
-in three height bands — low chassis and forks to 1513, cargo module 764 to
-2372, canopy 2222 to 2528 — which is what lets a nose tuck under the canopy in
-front and slide under an open door. A hybrid A\* search then plans each vehicle
-out of the gate at the real 3158 mm rear-axle turning radius, forward and
-reverse, against everything still parked with its doors open. Every path is
-finally replayed pose by pose in exact polygon geometry; the tightest clearance
-found is the number in the table.
-
-## The vehicles
-
-| | Flagship | Farm vehicle (Zusha cargo-trike) |
-|---|---|---|
-| Length | 4476 mm | 4373 mm |
-| Width | 2028 mm | 1813 mm |
-| Height | 2528 mm | 1953 mm |
-| Doors | two, 4135 mm overall when open | none, open flatbed |
-| Wheelbase | 2650 mm | 2650 mm |
-
-Same chassis, so both turn identically.
+Every trike is exploded into hundreds of part layers in the CAD, so neither
+layer names nor block instances identify a vehicle. Instead each wheel is
+found by its bounding-box signature, and a pair 960 mm apart with a third
+2650 mm ahead of their midpoint fixes a vehicle's rear-axle centre and heading
+exactly. The method is rotation-invariant, so the 45.24° diagonal is as
+precise as the square-on rows. Nothing in this repository is fitted or
+rounded.
 
 ## What is here
 
-- `index.html` — the interactive 3D. Self-contained: three.js is vendored
-  alongside it, so the page works on a slow or filtered connection.
-- `plans/` — the four marked floor plans, PDF and SVG, 1:56 at A2.
-- `docs/` — the write-up, including what each constraint costs and the open
-  questions.
-- `source/` — the Python that produced all of it.
-- `offline/` — the same simulation as one file with three.js inlined.
-  Download it, double-click it, works with no internet at all.
+- `index.html` — the simulation. Three.js is vendored, so it works on a phone
+  on a bad connection.
+- `offline/` — the same page with everything inlined, one file, no network.
+- `plans/` — the two marked-up floor plans, A2, as PDF and editable SVG.
+- `docs/` — the write-up.
+- `source/` — the geometry engine, the manoeuvre planner and the exact
+  polygon audit that every figure above comes from.
 
-## Rebuilding
-
-```
-pip install shapely numpy pillow scipy
-cd source
-python plan.py            # the floor plans
-python export.py          # the scene, planning every manoeuvre
-python build.py           # the viewer
-python audit_paths.py     # the exact geometric proof
-```
-
-Geometry read at 1:1 from `Hardware Designs/Warehouse Design.3dm`, saved
-8 Sep 2026 10:24. Millimetres throughout.
-
----
-
-Honeyguide Ghana Ltd, Hardware. v0.5.0, 8 September 2026.
+Built against `Warehouse Design V2.3dm` and `Warehouse Design V3.3dm`,
+9 September 2026. All dimensions in millimetres.

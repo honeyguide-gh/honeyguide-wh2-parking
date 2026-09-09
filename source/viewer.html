@@ -131,8 +131,8 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
 
 <header>
   <div class="brand"><b><span class="long">Honeyguide </span>WH2</b>
-    <span>v0.4.0 &middot; both doors open, any order &middot; every exit driven</span></div>
-  <nav id="tabs" aria-label="Layout schemes"></nav>
+    <span>v0.6.0 &middot; two scenarios &middot; Warehouse Design V2 and V3, 9 September</span></div>
+  <nav id="tabs" aria-label="Scenario"></nav>
   <div class="spacer"></div>
   <button class="themebtn" id="theme" title="Switch theme" aria-label="Switch theme">◐</button>
 </header>
@@ -142,7 +142,7 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
   <div class="hint" id="hint">Drag to orbit, right-drag to pan, scroll to zoom</div>
   <aside class="rail" id="rail">
     <div class="head">
-      <div class="eyebrow" id="s-key">Scheme</div>
+      <div class="eyebrow" id="s-key">Scenario</div>
       <h1 id="s-name">.</h1>
       <p id="s-tag">.</p>
     </div>
@@ -150,12 +150,13 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
       <div class="facts" id="s-facts"></div>
       <div class="sec"><h2>Daily sequence</h2><ol class="seq" id="s-seq"></ol></div>
       <div class="sec"><h2>What this costs and buys</h2><ul class="notes" id="s-notes"></ul></div>
+      <div class="sec"><h2>Doors that must shut to let one out</h2><ul class="notes" id="s-needs"></ul></div>
       <div class="sec"><h2>Floor marking</h2>
         <div class="key">
           <span><i class="sw" style="background:#F5C400"></i>Lead-in, lane edge</span>
           <span><i class="sw" style="background:#FFFFFF"></i>Vehicle stand</span>
           <span><i class="sw" style="background:repeating-linear-gradient(45deg,#111 0 3px,#F5C400 3px 6px)"></i>Door swing, duck</span>
-          <span><i class="sw" style="background:#1F6FB2"></i>Weighing and loading</span>
+          <span><i class="sw" style="background:#1F6FB2"></i>Check-in / check-out</span>
           <span><i class="sw" style="background:#2E9B5B"></i>600 mm working strip</span>
           <span><i class="sw" style="background:repeating-linear-gradient(45deg,#C8102E 0 3px,#fff 3px 6px)"></i>Fire, electrical</span>
         </div>
@@ -172,7 +173,8 @@ ul.notes li::before{content:""; position:absolute; left:0; top:8px; width:5px;
     <div class="grp"><button data-cam="iso">Overview</button>
       <button data-cam="plan">Plan</button>
       <button data-cam="gate">At the gate</button>
-      <button data-cam="street">In the street</button></div>
+      <button data-cam="street">In the row</button>
+      <button data-cam="runway">Runway</button></div>
     <div class="grp railtoggle"><button id="railbtn" aria-pressed="true">Details</button></div>
     <div class="spacer"></div>
     <div class="readout" id="readout">.</div>
@@ -407,8 +409,8 @@ var panels = [];
   }
   wallGroup.add(steel);
   // outside apron and the covered workshop
-  var ap = new THREE.Mesh(new THREE.PlaneGeometry(16,22), MAT.apron);
-  ap.rotation.x = -Math.PI/2; ap.position.set(-5.2, -0.006, -4.0);
+  var ap = new THREE.Mesh(new THREE.PlaneGeometry(28,22), MAT.apron);
+  ap.rotation.x = -Math.PI/2; ap.position.set(-11.2, -0.006, -4.0);
   ap.receiveShadow = true; world.add(ap);
   var w = D.workshop, wb = w.b;
   world.add(bx(wb, -0.15, 0.15, MAT.apron));
@@ -434,10 +436,10 @@ function cullWalls(){
 /* -------------------------------------------------------------- fittings */
 var fitGroup = new THREE.Group(); world.add(fitGroup);
 D.facilities.forEach(function(f){
-  if(f.key === 'weigh'){
-    var z = bx(f.b, 0.002, 0.004, MAT.zone); fitGroup.add(z); return; }
   var mat = (f.key === 'office') ? MAT.office
-          : (f.key === 'crates') ? MAT.rack : MAT.cold;
+          : (f.key === 'crates') ? MAT.rack
+          : (f.key === 'checkin' || f.key === 'shop' || f.key === 'shoprig')
+            ? MAT.eq : MAT.cold;
   fitGroup.add(bx(f.b, 0, f.h*M, mat));
 });
 D.equip.forEach(function(e){
@@ -544,6 +546,10 @@ function loadScheme(key){
     fleet.push({node:node, spec:v, path:current.paths[v.name] || null});
   });
   applyDoors(); renderRail(); stopPlay(); updateReadout();
+  var rwb = document.querySelector('[data-cam="runway"]');
+  if(rwb) rwb.hidden = !current.outside;
+  if(lastView){ if(lastView === 'runway' && !current.outside) lastView = 'iso';
+                goTo(lastView); }
 }
 function applyDoors(){
   fleet.forEach(function(f){
@@ -600,9 +606,12 @@ function stepPlay(dt){
   var f = fleet.filter(function(q){ return q.spec.name === name; })[0];
   var p = f.path, n = p.length - 1;
   f.node.visible = true;
+  ['L','R'].forEach(function(sd){ setDoor(f.node, sd, 0); });
   play.t += dt * 12.0;   // 150 mm a pose, so about 1.8 m/s
   if(play.t >= n){
-    if(play.dir === 'in'){ place(f.node, f.spec.u, f.spec.v, f.spec.hdg); }
+    if(play.dir === 'in'){ place(f.node, f.spec.u, f.spec.v, f.spec.hdg);
+      ['L','R'].forEach(function(sd){
+        setDoor(f.node, sd, (doorsOpen && f.spec.doors.indexOf(sd)>=0) ? 1 : 0); }); }
     else { f.node.visible = false; }
     play.i++; play.t = 0; return; }
   var x = (play.dir === 'in') ? (n - play.t) : play.t;
@@ -615,17 +624,30 @@ function stepPlay(dt){
 window.__hgPlay = function(d){ stopPlay(); startPlay(d); };
 window.__hgTick = function(dt){ stepPlay(dt); return !!play; };
 window.__hgStop = function(){ stopPlay(); };
+window.__hgView = function(v, q){ if(q) VIEWS[v] = q; goTo(v, true); };
 
 /* ----------------------------------------------------------------- views */
 var VIEWS = {
   iso:   {t:[12, 1.2, -4.5], d:35, az:-1.02, el:0.46},
   plan:  {t:[11.5, 0, -4.56], d:40, az:0.0, el:1.45},
   gate:  {t:[3.0, 1.5, -6.3], d:13, az:-1.55, el:0.13},
-  street:{t:[15.0, 1.4, -4.7], d:15, az:1.60, el:0.14}
+  street:{t:[15.0, 1.4, -4.7], d:15, az:1.60, el:0.14},
+  runway:{t:[-13.4, 1.1, -6.1], d:13, az:-0.30, el:0.22}
 };
-var anim = null;
+/* with vehicles waiting in the runway the shed is only half the picture,
+   so the two wide views pull back to take the yard in as well */
+var WIDE = {
+  iso:   {t:[4.0, 1.2, -4.5], d:48, az:-1.02, el:0.44},
+  plan:  {t:[3.6, 0, -4.56], d:60, az:0.0, el:1.45}
+};
+function viewOf(v){
+  if(current && current.outside && WIDE[v]) return WIDE[v];
+  return VIEWS[v];
+}
+var anim = null, lastView = null;
 function goTo(v, snap){
-  var q = VIEWS[v]; if(!q) return;
+  lastView = v;
+  var q = viewOf(v); if(!q) return;
   if(snap){ ctl.target.set(q.t[0],q.t[1],q.t[2]); ctl.dist=q.d;
             ctl.az=q.az; ctl.el=q.el; updateCam(); return; }
   anim = {from:{t:ctl.target.clone(), d:ctl.dist, az:ctl.az, el:ctl.el}, to:q, u:0};
@@ -647,8 +669,8 @@ function renderTabs(){
   var nav = document.getElementById('tabs'); nav.innerHTML = '';
   D.schemes.forEach(function(s){
     var b = document.createElement('button');
-    b.innerHTML = '<b>' + s.name.replace(/^Scheme \d+ - /,'') + '</b><small>' +
-      s.inside + ' inside plus the workshop</small>';
+    b.innerHTML = '<b>' + s.name.replace(/ - /, ' \u00b7 ') + '</b><small>' +
+      s.inside_label + ' inside' + (s.outside ? ', ' + s.outside + ' in the runway' : '') + '</small>';
     b.setAttribute('data-key', s.key);
     b.addEventListener('click', function(){ select(s.key); });
     nav.appendChild(b); });
@@ -661,32 +683,37 @@ function select(key){
 function renderRail(){
   var s = current, idx = 0;
   D.schemes.forEach(function(q,i){ if(q.key===s.key) idx = i+1; });
-  document.getElementById('s-key').textContent = 'Scheme '+idx+' of '+D.schemes.length;
+  document.getElementById('s-key').textContent = 'Scenario '+idx+' of '+D.schemes.length;
   document.getElementById('s-name').textContent = s.name.split(' - ')[1];
   document.getElementById('s-tag').textContent = s.tag;
-  var facts = [['Flagships inside', s.inside_label || String(s.inside), true],
-    ['Plus the workshop bay', '1'],
-    ['Doors open in place', s.doors_label || 'both, every vehicle'],
-    ['Clearance at fittings', s.asdrawn ? 'three are short' : '600 mm'],
-    [s.lane_name || 'Drive aisle', s.aisle ? s.aisle+' mm' : 'none'],
-    ['Any vehicle, any order', s.order_label || 'no, fixed order',
-     !!s.anyorder],
-    ['Tightest point driving out', s.tight_label || (s.tight + ' mm')]];
+  var facts = [['Flagships inside', s.inside_label, true],
+    ['Waiting in the runway', s.outside_label],
+    ['Doors open in place', s.doors_label],
+    ['Working clearance', s.clear_label],
+    ['Drive aisle', s.aisle ? s.aisle+' mm' : 'none'],
+    ['Any order, nobody moves', s.order_label, !!s.anyorder],
+    ['Tightest point driving out', s.tight_label]];
   document.getElementById('s-facts').innerHTML = facts.map(function(f){
     return '<div>'+f[0]+'</div><b'+(f[2]?' class="hi"':'')+'>'+f[1]+'</b>'; }).join('');
   document.getElementById('s-seq').innerHTML =
     s.sequence.map(function(x){return '<li>'+x+'</li>';}).join('');
   document.getElementById('s-notes').innerHTML =
     s.notes.map(function(x){return '<li>'+x+'</li>';}).join('');
+  var nd = [], k;
+  for(k in s.needs){ if(!s.needs.hasOwnProperty(k)) continue;
+    nd.push('<li><b>'+k+'</b> goes once '+ s.needs[k].map(function(q){
+      return q[0]+' shuts its '+q[2]+' door'; }).join(' and ') +'</li>'); }
+  document.getElementById('s-needs').innerHTML = nd.length ? nd.join('')
+    : '<li>Nothing. Every vehicle drives out with the rest untouched.</li>';
 }
 function updateReadout(name, i, n, dir){
   var el = document.getElementById('readout'); if(!el) return;
   if(dir === 'gone'){ el.innerHTML = '<b>all out</b> &nbsp; press Reset'; return; }
   if(name) el.innerHTML = (dir === 'out' ? 'Leaving <b>' : 'Arriving <b>')
     + name + '</b> &nbsp; ' + i + ' of ' + n;
-  else el.innerHTML = '<b>'+current.inside+'</b> inside &nbsp; doors '+
-    (doorsOpen?'<b>open</b>':'shut')+' &nbsp; '+
-    (current.aisle ? (current.anyorder ? 'aisle <b>' : 'walkway <b>')+current.aisle+'</b> mm' : 'no drive aisle');
+  else el.innerHTML = '<b>'+current.inside+'</b> inside &nbsp; '+
+    (current.outside ? '<b>'+current.outside+'</b> in the runway &nbsp; ' : '')+
+    'doors '+(doorsOpen?'<b>open</b>':'shut');
 }
 function hideHint(){ var h=document.getElementById('hint');
   if(h && h.style.opacity!=='0') h.style.opacity='0'; }
